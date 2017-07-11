@@ -1,0 +1,17 @@
+int x = 10
+int y = 5
+
+while (x > y) {
+    print(x)
+    x = x - 1
+}
+
+string s = "whatsup"
+
+# comment
+# comments can be pretty long too but not multi line cause fuck it
+bool b = true
+
+if b != true {
+    print("cant get here")
+}

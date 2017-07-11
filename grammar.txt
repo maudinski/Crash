@@ -1,0 +1,52 @@
+int x = 10
+int y = 9
+
+func int add(int a, int b) {
+    return a + b
+}
+
+x = 8
+int answer = add(x, y)
+
+print(answer)
+
+int[5] nums = [9, 3, 4, 1, 0]
+
+# later
+for (int i = 0; i < nums.len(); i = i + 1) {
+    print(nums[i])
+}
+
+float z = 8.3
+string s = "Some string"
+
+print(z, s)
+
+string[2] strs = ["whats", "up"]
+
+nums.append(8)
+strs.append(strs)
+
+# this would be a comment
+
+bool b = true
+
+if b != true {
+	print("nice")
+}
+
+
+# AND THE HARDEST PART YET
+struct bucket {
+	int waterAmt
+	string color
+	bool heavy
+}
+
+bucket buck = {0, "red", false}
+buck.waterAmt = 7
+print(buck)
+
+func bool isEmpty(bucket b) {
+	return b.waterAmt == 0
+}
