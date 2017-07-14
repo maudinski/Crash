@@ -1,0 +1,8 @@
+func main(){
+    int x = 9
+    print (x)
+    if
+}
+
+int add(int x, int y) {
+    return x + y

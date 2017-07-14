@@ -3,7 +3,7 @@ package main
 import (
 
 )
-
+  
 type data struct {
     data []byte
     index int

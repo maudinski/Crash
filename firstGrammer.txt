@@ -1,7 +1,7 @@
 # this is fucking juvenile
 string s = "what's up"
 print(s)
-[]
+
 int x = 4
 int y = 789
 int z = x - y

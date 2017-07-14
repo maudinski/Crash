@@ -5,20 +5,18 @@ import(
     "regexp"
 )
 
-type token struct {
-    ttype string
-    value string
-}
-
 type lexer struct {
     data *data
     keyWords []string
     types []string
+    newLines int //count of new lines
+    stream chan token
 }
 
 func newLexer(d *data) *lexer {
     l := new(lexer)
     l.data = d
+    l.newLines = 0
     return l
 }
 
@@ -41,17 +39,18 @@ func (lx *lexer) isKeyword(s string ) bool {
 }
 
 
-func (lx *lexer) stream() chan token {
-    stream := make(chan token)
+func (lx *lexer) flow() chan token {
+    lx.stream = make(chan token)
     go func() {
         for b, ok := lx.data.nextByte(); ok; b, ok = lx.data.nextByte() {
             c := string(b)
             if c == " " {
                 continue
             } else if c =="\n"{
-                stream <- token{"NEWLINE", "\\n"}//BUG may cause bug cause escape seq
+                lx.newLines++//maybe?
+                lx.stream <- token{"NEWLINE", "\\n"}//BUG may cause bug cause escape seq
             } else if isWrapper(c) {//if its some sort of parenthesis/bracket
-                stream <- token{c, c}
+                lx.stream <- token{c, c}
             } else if isSingleOperator(c) {//if its an operator
                 b2, ok := lx.data.peek() //TODO this could be its own function
                 c2 := string(b2)
@@ -59,29 +58,31 @@ func (lx *lexer) stream() chan token {
                     lx.data.nextByte()
                     c += c2
                 }
-                stream <- token{c, c}
+                lx.stream <- token{c, c}
             } else if c == "\"" {//if its about to be a string
                 str, err := lx.getTill("\"")
                 if err != nil { throwError("String never closed") } // only error check
-                stream <- token{"STRING", str}
+                lx.stream <- token{"STRING", str}
             } else if c == "#" { //if its a comment
                 lx.getTill("\n")
             } else if isDigit(c) {
-                stream <- token{"NUMBER", lx.getNumber(c)}
+                lx.stream <- token{"NUMBER", lx.getNumber(c)}
             } else {
                 word := lx.getWord(c)
                 if lx.isType(word) {
-                    stream <- token{"TYPE", word}
+                    lx.stream <- token{"TYPE", word}
+                } else if word == "print" {
+                    lx.stream <- token{"PRINT", word}
                 } else if lx.isKeyword(word){
-                    stream <- token{"KEYWORD", word}
+                    lx.stream <- token{"KEYWORD", word}
                 } else {
-                    stream <- token{"VARIABLE", word}
+                    lx.stream <- token{"VARIABLE", word}
                 }
             }
         }
-        close(stream)
+        close(lx.stream)
     }()
-    return stream
+    return lx.stream
 }
 
 //TODO put these in lx so not constant compile (the r's)
