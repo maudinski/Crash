@@ -1,7 +1,7 @@
-int x = 6
-int y = 7
-print(y)
-int z = 19
-print(y)
-print(z)
+# okay
+int x = 4 + 7
 print(x)
+x = 9
+print(x)
+string s = "Vf"
+print(s)

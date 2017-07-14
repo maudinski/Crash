@@ -1,3 +1,4 @@
+//probably the most stable part of this project. not saying much tho
 package main
 
 import(
@@ -58,7 +59,7 @@ func (lx *lexer) flow() chan token {
                     lx.data.nextByte()
                     c += c2
                 }
-                lx.stream <- token{c, c}
+                lx.stream <- token{"OPERATOR", c}
             } else if c == "\"" {//if its about to be a string
                 str, err := lx.getTill("\"")
                 if err != nil { throwError("String never closed") } // only error check

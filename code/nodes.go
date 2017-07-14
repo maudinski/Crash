@@ -17,10 +17,15 @@ type Value struct {
     value string
 }
 
+type Reassign struct {
+    n Name
+    v Value
+}
+
 type Declaration struct {
     n Name
     t Type
-    v Value
+    v node
 }
 
 type Print struct {
@@ -31,10 +36,15 @@ func newPrint(ns ...node) Print {
     return p
 }
 
+type Operation struct {
+    op Operator
+    vLeft node
+    vRight node
+}
 
-
-
-
+type Operator struct {
+    v Value
+}
 
 
 
