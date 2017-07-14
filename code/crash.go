@@ -19,7 +19,7 @@ func main() {
 
     parser := newParser(lexer)
     ast := parser.parse()
-    ast.execute()
+    ast.interpret()
 }
 
 func throwError(s ...interface{}) {

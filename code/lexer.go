@@ -76,7 +76,7 @@ func (lx *lexer) flow() chan token {
                 } else if lx.isKeyword(word){
                     lx.stream <- token{"KEYWORD", word}
                 } else {
-                    lx.stream <- token{"VARIABLE", word}
+                    lx.stream <- token{"NAME", word}
                 }
             }
         }

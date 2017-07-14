@@ -1,27 +1,56 @@
 package main
 
 import (
-    "fmt"
 )
 
-type node interface{
-    exec()
+type node interface{}
+
+type Name struct {
+    value string
+}
+
+type Type struct {
+    value string
+}
+//used for declaration
+type Value struct {
+    value string
 }
 
 type Declaration struct {
-    ttype string
-    name string
-    value string
-}
-
-func (d Declaration) exec() {
-
+    n Name
+    t Type
+    v Value
 }
 
 type Print struct {
-    value string
+    params []node
+}
+func newPrint(ns ...node) Print {
+    p := Print{ns}
+    return p
 }
 
-func (p Print) exec() {
-    fmt.Println(p.value)
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
