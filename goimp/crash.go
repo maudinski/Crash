@@ -14,8 +14,8 @@ func main() {
     data := newData(fd)
 
     lexer := newLexer(data)
-    lexer.setKeywords(/*"if", "while", */"print")
-    lexer.setTypes("int", /*"float",*/ "string"/*, "bool"*/)
+    lexer.setKeywords("if", /*"while", */"print")
+    lexer.setTypes("int", /*"float",*/ "string", "bool")
 
     parser := newParser(lexer)
     ast := parser.parse()

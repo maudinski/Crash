@@ -24,7 +24,7 @@ func (p *parser) parse() *AbSynTree {
         case "TYPE":
             n := p.getDeclarationN(t)
             nodes = append(nodes, n)
-        case "PRINT":
+        case "print":
             n := p.getPrintN()
             nodes = append(nodes, n)
         case "NAME":
@@ -78,6 +78,8 @@ func (p *parser) getPrintN() Print {
             done = true
         case "NAME":
             nodes = append(nodes, Name{tok.value})
+        case "STRING":
+            nodes = append(nodes, String{Value{tok.value}})
         }
         if done {
             break
@@ -85,11 +87,6 @@ func (p *parser) getPrintN() Print {
     }
     return newPrint(nodes...)
 }
-
-
-
-
-
 
 
 

@@ -48,19 +48,15 @@ func (ast *AbSynTree) execDeclaration(n node) {
 //BUG if variable doesnt exist
 func (ast *AbSynTree) execPrint(n node) {
     p, _ := n.(Print)
-    var prints []string
     for _, n := range p.params {
         switch n.(type){
         case Name:
             name := n.(Name)
-            prints = append(prints, name.value)
+            print(ast.vars[name.value][1])
+        case String: //string struct, NOT a go string
+            s := n.(String)
+            print(s.v.value)
         }
-    }
-    if len(prints) == 0 { return }
-    print(ast.vars[prints[0]][1])
-    for i := 1; i < len(prints); i++ {
-        print(" ")
-        print(ast.vars[prints[i]][1])
     }
     print("\n")
 }

@@ -72,10 +72,8 @@ func (lx *lexer) flow() chan token {
                 word := lx.getWord(c)
                 if lx.isType(word) {
                     lx.stream <- token{"TYPE", word}
-                } else if word == "print" {
-                    lx.stream <- token{"PRINT", word}
-                } else if lx.isKeyword(word){
-                    lx.stream <- token{"KEYWORD", word}
+                } else if lx.isKeyword(word) {
+                    lx.stream <- token{word, word}
                 } else {
                     lx.stream <- token{"NAME", word}
                 }

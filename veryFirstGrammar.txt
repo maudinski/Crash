@@ -1,7 +1,7 @@
-# okay
-int x = 4 + 7
+int x = 7 + 9
 print(x)
-x = 9
+
+print("whatsup")
+# comments
+x = 6
 print(x)
-string s = "Vf"
-print(s)

@@ -47,10 +47,18 @@ type Operator struct {
 }
 
 
+type String struct {
+    v Value
+}
 
-
-
-
+type If struct {
+    b node //can either be a Boolean or an Operation
+    t node
+    f node
+}
+ type Boolean struct{
+     v Value
+ }
 
 
 
