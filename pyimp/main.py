@@ -1,13 +1,14 @@
 import sys
 import stream
 import lexer
+import parser
 
 def main():
-    file = open(sys.argv[3] ,"r")
-    st = stream.Stream(file.read())
+    f = open(sys.argv[1] ,"r")
+    filestream = stream.Stream(f.read())
     keywords = ["print", "if"]
     types = ["int", "float", "string", "bool"]
-    for token in lexer.lex(st, keywords, types):
-        print(token)
+    lx = lexer.Lexer(filestream, keywords, types)
+    ast = parser.parseLx(lx)
 
 main()

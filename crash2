@@ -1,2 +1,1 @@
-# bug you have to change in main.py for it to take the position of $1
-python3 pyimp/main.py pyimp/lexer.py pyimp/stream.py $1
+python3 pyimp/main.py $1

@@ -1,69 +1,89 @@
-def lex(stream, keywords, types):
-    c = stream.next()
-    while c is not None:
-        if c == " ":
-            pass
-        elif c == "\n":
-            yield ("NEWLINE", "\\n")
-        elif c in "{[()]}":
-            yield (c, c)
-        elif c in "+-/%*":
-            yield ("OPERATOR", c)
-        elif c in "<>=":
-            if stream.peek() == "=":
-                c += stream.next()
-            yield (c, c)
-        elif c == "\"":
-            yield ("STRING", get_string(stream))
-        elif c == "#":
-            dispose_comment(stream)
-            pass
-        elif c in ".0123456789": #re would be best
-            yield ("NUMBER", get_num(c, stream))
-        else:
-            word = get_word(c, stream)
-            if word in keywords:
-                yield (word, word)
-            elif word in types:
-                yield ("TYPE", word)
+import re
+# gonna have to change shit up when i impliment arrays, specifically with the "word"
+# else statment
+class Lexer():
+    def __init__(self, stream, keywords, types):
+        self.stream = stream
+        self.keywords = keywords
+        self.types = types
+        self.backedUp = []
+
+    def next(self):
+        if self.backedUp != []:
+            return self.backedUp.pop()
+        c = self.stream.next()
+        while c is not None:
+            if c == " ":
+                pass
+            elif c == "\n":
+                return ("NEWLINE", "\\n")
+            elif c in "{[()]}":
+                return (c, c)
+            elif c in "+-/%*":
+                return ("OPERATOR", c)
+            elif c in "<>=":
+                if self.stream.peek() == "=":
+                    c += self.stream.next()
+                return (c, c)
+            elif c == "\"":
+                return ("STRING", self.get_string())# what if no " ?
+            elif c == "#":
+                self.dispose_comment()
+                pass
+            elif re.match("[.0-9]", c):
+                return ("NUMBER", self.get_num(c))
+            elif c == ",":
+                return (c, c)
             else:
-                yield ("NAME", word)
+                word = self.get_word(c)
+                if word in self.keywords:
+                    return (word, word)
+                elif word in self.types:
+                    return ("TYPE", word)
+                else:
+                    return ("NAME", word)
 
-        c = stream.next()
+            c = self.stream.next()
+        return None
 
+    def get_word(self, s):
+        c = self.stream.next()
+        while re.match("[_a-zA-Z0-9]", c): #BUG
+            s += c
+            c = self.stream.next()
+        self.stream.go_back()
+        return s
 
-def get_word(s, stream):
-    c = stream.next()
-    while c in "abcdefghijklmnopqrstuvwxyz": #BUG
-        s += c
-        c = stream.next()
-    stream.go_back()
-    return s
-
-def get_num(n, stream):
-    c = stream.next()
-    while c in ".0123456789": #re would be best
-        n += c
-    stream.go_back()
-    return n
-
-
-def dispose_comment(stream):
-    c = stream.next()
-    while c != "\n":
-        c = stream.next()
-
-
-def get_string(stream):
-    returner = ""
-    c = stream.next()
-    while c != "\"":
-        returner += c
-        c = stream.next()
-    return returner
+    def get_num(self, n):
+        c = self.stream.next()
+        while re.match("[.0-9]", c): #re would be best
+            n += c
+            c = self.stream.next()
+        self.stream.go_back()
+        return n
 
 
+    def dispose_comment(self):
+        c = self.stream.next()
+        while c != "\n":
+            c = self.stream.next()
 
+
+    def get_string(self):
+        returner = ""
+        c = self.stream.next()
+        while c != "\"":
+            returner += c
+            c = self.stream.next()
+        return returner
+
+    def put_back(self, token):
+        self.backedUp.insert(0, token)
+
+    def peek(self):
+        tok = self.next()
+        self.put_back(tok)
+        return tok
 
 
 

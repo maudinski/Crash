@@ -1,5 +1,5 @@
+# used as an iterator of sorts for the file contents
 class Stream:
-
     def __init__(self, filestring):
         self.filestring = filestring
         self.len = len(filestring)
