@@ -35,11 +35,11 @@ class Parser:
             if peekedTok[0] == "OPERATOR":
                 params.append(self.get_operation(tok))# gotta write
             elif tok[0] == "NAME":
-                    params.append(Name(tok[1]))# gotta write
+                    params.append(n.Name(tok[1]))# gotta write
             elif tok[0] == "NUMBER":
-                    params.append(Number(tok[1]))# gotta write
+                    params.append(n.Number(tok[1]))# gotta write
             elif tok[0] == "STRING":
-                    params.append(String(tok[1]))# gotta write
+                    params.append(n.String(tok[1]))# gotta write
 
             tok = self.lx.next()
             if tok[0] != ")" and tok[0] != ",":
@@ -49,7 +49,7 @@ class Parser:
 
         if params == []:
             error.throwError("no paramaters in print on line ", self.line)
-
+        return n.Print(params)
 
 
 
