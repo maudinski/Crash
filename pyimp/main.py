@@ -2,6 +2,7 @@ import sys
 import stream
 import lexer
 import parser
+import AST
 
 def main():
     f = open(sys.argv[1] ,"r")
@@ -9,6 +10,9 @@ def main():
     keywords = ["print", "if"]
     types = ["int", "float", "string", "bool"]
     lx = lexer.Lexer(filestream, keywords, types)
-    ast = parser.parseLx(lx)
+    p = parser.Parser(lx)
+    ast = AST.Ast(p)
+    ast.interpret()
+
 
 main()

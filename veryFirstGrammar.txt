@@ -1,5 +1,4 @@
-int x = 7
-print(x)
+int x = 7 + 9
 # comments
-string s = "hello"
-print(s)
+string s = "hello" + 6.4
+print(s, x, 45, "hellllo")

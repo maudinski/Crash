@@ -1,0 +1,4 @@
+Python implementation has no object model, everything is just a string. kind of
+bad. The bug with this is a lot. Should work on this is in go imp so that structs
+are easier to implement. Also, the way exec_operation does this, theres not way
+to tell if they really wanted "6" + "7" as opposed to 6 + 7. Both yield 13

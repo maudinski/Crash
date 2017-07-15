@@ -26,16 +26,16 @@ class Lexer():
                     c += self.stream.next()
                 return (c, c)
             elif c == "\"":
-                return ("STRING", self.get_string())# what if no " ?
+                return ("STRING", self.get_matched("[^\"]", "", False)) # what if no " ?
             elif c == "#":
-                self.dispose_comment()
+                self.get_matched("[^\n]", c, True)
                 pass
             elif re.match("[.0-9]", c):
-                return ("NUMBER", self.get_num(c))
+                return ("NUMBER", self.get_matched("[.0-9]", c, True))
             elif c == ",":
                 return (c, c)
             else:
-                word = self.get_word(c)
+                word = self.get_matched("[_a-zA-Z0-9]", c, True)
                 if word in self.keywords:
                     return (word, word)
                 elif word in self.types:
@@ -46,37 +46,6 @@ class Lexer():
             c = self.stream.next()
         return None
 
-    def get_word(self, s):
-        c = self.stream.next()
-        while re.match("[_a-zA-Z0-9]", c): #BUG
-            s += c
-            c = self.stream.next()
-        self.stream.go_back()
-        return s
-
-    def get_num(self, n):
-        c = self.stream.next()
-        while re.match("[.0-9]", c): #re would be best
-            n += c
-            c = self.stream.next()
-        self.stream.go_back()
-        return n
-
-
-    def dispose_comment(self):
-        c = self.stream.next()
-        while c != "\n":
-            c = self.stream.next()
-
-
-    def get_string(self):
-        returner = ""
-        c = self.stream.next()
-        while c != "\"":
-            returner += c
-            c = self.stream.next()
-        return returner
-
     def put_back(self, token):
         self.backedUp.insert(0, token)
 
@@ -85,6 +54,14 @@ class Lexer():
         self.put_back(tok)
         return tok
 
+    def get_matched(self, regex, s, put_first_nonmatch_back):
+        c = self.stream.next()
+        while re.match(regex, c):
+            s += c
+            c = self.stream.next()
+        if put_first_nonmatch_back:
+            self.stream.go_back()
+        return s
 
 
 

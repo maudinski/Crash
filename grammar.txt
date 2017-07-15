@@ -21,7 +21,8 @@ print(5, 6)
 
 float z = 8.3
 string s = "Some string"
-
+print("Enter a string")
+s = scan()
 print(z, s)
 
 string[2] strs = ["whats", "up"]
