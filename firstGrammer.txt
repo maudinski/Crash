@@ -1,8 +1,10 @@
-# this is fucking juvenile
-string s = "what's up"
-print(s)
+void main() {
+    # this is fucking juvenile
+    string s = "what's up"
+    print(s)
 
-int x = 4
-int y = 789
-int z = x - y
-print(z - 9)
+    int x = 4
+    int y = 789
+    int z = x - y
+    print(z - 9)
+}

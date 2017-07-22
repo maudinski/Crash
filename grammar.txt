@@ -1,43 +1,3 @@
-int x = 10
-int y = 9
-
-func int add(int a, int b) {
-    return a + b
-}
-
-x = 8
-int answer = add(x, y)
-
-print(answer)
-
-int[5] nums = [9, 3, 4, 1, 0]
-
-# later
-for (int i = 0; i < nums.len(); i = i + 1) {
-    print(nums[i])
-}
-
-print(5, 6)
-
-float z = 8.3
-string s = "Some string"
-print("Enter a string")
-s = scan()
-print(z, s)
-
-string[2] strs = ["whats", "up"]
-
-nums.append(8)
-strs.append(strs)
-
-# this would be a comment
-
-bool b = true
-
-if b != true {
-	print("nice")
-}
-
 
 # AND THE HARDEST PART YET
 struct bucket {
@@ -46,10 +6,79 @@ struct bucket {
 	bool heavy
 }
 
-bucket buck = {0, "red", false}
-buck.waterAmt = 7
-print(buck)
 
-func bool isEmpty(bucket b) {
-	return b.waterAmt == 0
+func main() {
+    int x = 10
+    int y = 9
+
+    x = 8
+    int answer = add(x, y)
+
+    print(answer)
+
+
+    int[5] nums = [9, 3, 4, 1, 0]
+    # later
+    for int i = 0; i < nums.len(); i = i + 1 {
+        print(nums[i])
+    }
+
+    print(5, 6)
+
+    float z = 8.3
+    string s = "Some string"
+    print("Enter a string")
+    s = scan()
+    print(z, s)
+
+    # going to have to rewrite the concept of the lexer for array types
+    string[2] strs = ["whats", "up"]
+
+    nums.append(8)
+    strs.append(strs)
+
+    #- this would be a comment, and i guess this would be how you do a multi line
+    comment -#
+
+    bool b = true
+
+    if b != true {
+    	print("nice")
+    }
+
+    bucket buck = {0, "red", false}
+    buck.waterAmt = 7
+    print(buck)
+
 }
+
+func isEmpty(bucket b) bool, int {
+	return b.waterAmt == 0, b.waterAmt
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
