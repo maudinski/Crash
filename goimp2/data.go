@@ -21,14 +21,14 @@ func newData (fileData []byte) *Data {
 func (d *Data) next() string {
     d.index++
     if d.index == d.length {
-        return "@"
+        return "EOF"
     }
     return string(d.data[d.index])
 }
 
 func (d *Data) peek() string {
     if d.index + 1 == d.length {
-        return "@"
+        return "EOF"
     }
     return string(d.data[d.index+1])
 }

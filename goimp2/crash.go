@@ -21,7 +21,7 @@ func main() {
     lexer := newLexer(data)
     lexer.setKeywords("if", "func", "while", "for", "return", "print", "struct")
     lexer.setTypes("int", "float", "string", "char", "byte")
-    for t := lexer.next(); t.ttype != "@"; t = lexer.next(){
+    for t := lexer.next(); t.ttype != "EOF"; t = lexer.next(){
         fmt.Println(t)
     }
 }

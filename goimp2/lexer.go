@@ -46,12 +46,12 @@ func (lx *Lexer) next() token {
         return lx.queued.pull()
     }
     c := lx.data.next()
-    if c == "@" { // arbitrary, i chose this to mean EOF. Will be fine within strings
+    if c == "EOF" { // arbitrary, i chose this to mean EOF. Will be fine within strings
         if len(lx.errors) != 0 { // reached only if nextByte is out of data
             for _, s := range(lx.errors){ fmt.Println(s) }
             os.Exit(0)
         }
-        return token{"@", "@"}
+        return token{"EOF", "EOF"}
     }
     if c == " " || c == "\t" { return lx.next() // spaces
     } else if c == "\n" { lx.lineNum++; return token{"NEWLINE", "\\n"} // \n
@@ -75,7 +75,7 @@ func (lx *Lexer) peek() token {
 }
 
 func (lx *Lexer) scrapeComment() {
-    for c := lx.data.next(); c != "@" && c != "\n"; c = lx.data.next() {}
+    for c := lx.data.next(); c != "EOF" && c != "\n"; c = lx.data.next() {}
     lx.lineNum++
 }
 
@@ -83,7 +83,7 @@ func (lx *Lexer) scrapeComment() {
 func (lx *Lexer) getStrToken() token {
     str := ""
     closed := false
-    for c := lx.data.next(); c != "@"; c = lx.data.next(){
+    for c := lx.data.next(); c != "EOF"; c = lx.data.next(){
         if c == "\n" {
             closed = false
             lx.lineNum++
@@ -103,7 +103,7 @@ func (lx *Lexer) getStrToken() token {
 // might have to have specified operator types, like BOOL_OPERATOR and MATH_OPERATOR
 func (lx *Lexer) getOpToken(op string) token {
     c := lx.data.peek()
-    if c == "@" { // more of a parsing error than lexing, but ehh, we're here
+    if c == "EOF" { // more of a parsing error than lexing, but ehh, we're here
         lx.errors = append(lx.errors, "Nothing after operator, line "+toString(lx.lineNum))
     } else if isWrapper(c) {
         lx.data.next()
@@ -118,7 +118,7 @@ func (lx *Lexer) getOpToken(op string) token {
 //"NUMBER" as type of token regardless
 func (lx *Lexer) getNumToken(snum string) token {
     c := ""
-    for c = lx.data.next(); c != "@"; c = lx.data.next() {
+    for c = lx.data.next(); c != "EOF"; c = lx.data.next() {
         if !isDigit(c) { break }
         snum += c
     }
@@ -132,7 +132,7 @@ func (lx *Lexer) getNumToken(snum string) token {
 
 // str is the first character of the token (already read in by lx.next())
 func (lx *Lexer) getAmbiguousToken(str string) token {
-    for c := lx.data.next(); c != "@"; c = lx.data.next() {
+    for c := lx.data.next(); c != "EOF"; c = lx.data.next() {
         if ok, _ := regexp.MatchString("[_a-zA-Z0-9]", c); !ok { break }
         str += c
     }
