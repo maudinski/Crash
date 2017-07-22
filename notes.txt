@@ -1,2 +1,4 @@
 just build it with everything in mind, fuck this "add features as you go" shit, it
 just leads to massive spaghetti code
+
+also, haven't tested the lexer with tossing bugs in it

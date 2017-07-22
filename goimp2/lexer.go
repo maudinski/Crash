@@ -41,42 +41,41 @@ func (lx *Lexer) setTypes(t ...string) {
 //the error strings are added to a the lx.errors. On the last call to this frunction
 //from the parser (it will be the last call because this function will be returning false)
 //, if the errors []string isnt empty, it will print them all out and exit the program
-func (lx *Lexer) next() (token, bool) {
+func (lx *Lexer) next() token {
     if !lx.queued.isEmpty() {
-        return lx.queued.pull(), true
+        return lx.queued.pull()
     }
-    b, ok := lx.data.next()
-    if !ok {
+    c := lx.data.next()
+    if c == "@" { // arbitrary, i chose this to mean EOF. Will be fine within strings
         if len(lx.errors) != 0 { // reached only if nextByte is out of data
             for _, s := range(lx.errors){ fmt.Println(s) }
             os.Exit(0)
         }
-        return token{}, false
+        return token{"@", "@"}
     }
-    c := string(b)
-    if c == " " || c == "\t" { return lx.next()  // spaces
-    } else if c == "\n" { lx.lineNum++; return token{"NEWLINE", "\\n"}, true  // \n
-    } else if isWrapper(c) { return token{c, c}, true  // any parenthesis
+    if c == " " || c == "\t" { return lx.next() // spaces
+    } else if c == "\n" { lx.lineNum++; return token{"NEWLINE", "\\n"} // \n
+    } else if isWrapper(c) { return token{c, c} // any parenthesis
     } else if c == "#" { lx.scrapeComment(); return lx.next()  // comments
-    } else if c == "." { return token{"DOT_OP", c}, true
-    } else if isDigit(c) { return lx.getNumToken(c), true  // ints and floats
-    } else if isOperator(c) { return lx.getOpToken(c), true  // math and bool operators
-    } else if c == "\"" { return lx.getStrToken(), true  // strings
-    } else { return lx.getAmbiguousToken(c), true } // cant classify by single byte
+    } else if c == "." { return token{"DOT_OP", c} // dot operator, idk what to do
+    } else if isDigit(c) { return lx.getNumToken(c) // ints and floats
+    } else if isOperator(c) { return lx.getOpToken(c) // math and bool operators
+    } else if c == "\"" { return lx.getStrToken() // strings
+    } else { return lx.getAmbiguousToken(c) } // cant classify by single byte
 }
 
 func (lx *Lexer) goBack(t token) {
     lx.queued.push(t)
 }
 //maybe
-func (lx *Lexer) peek() (token, bool) {
-    t, ok := lx.next()
-    if ok { lx.goBack(t) }
-    return t, ok
+func (lx *Lexer) peek() token {
+    t := lx.next()
+    lx.goBack(t)
+    return t
 }
 
 func (lx *Lexer) scrapeComment() {
-    for b, ok := lx.data.next(); ok && string(b) != "\n"; b, ok = lx.data.next(){}
+    for c := lx.data.next(); c != "@" && c != "\n"; c = lx.data.next() {}
     lx.lineNum++
 }
 
@@ -84,8 +83,7 @@ func (lx *Lexer) scrapeComment() {
 func (lx *Lexer) getStrToken() token {
     str := ""
     closed := false
-    for b, ok := lx.data.next(); ok; b, ok = lx.data.next(){
-        c := string(b)
+    for c := lx.data.next(); c != "@"; c = lx.data.next(){
         if c == "\n" {
             closed = false
             lx.lineNum++
@@ -104,12 +102,10 @@ func (lx *Lexer) getStrToken() token {
 
 // might have to have specified operator types, like BOOL_OPERATOR and MATH_OPERATOR
 func (lx *Lexer) getOpToken(op string) token {
-    b, ok := lx.data.peek()
-    if !ok { // more of a parsing error than lexing, but ehh, we're here
+    c := lx.data.peek()
+    if c == "@" { // more of a parsing error than lexing, but ehh, we're here
         lx.errors = append(lx.errors, "Nothing after operator, line "+toString(lx.lineNum))
-    }
-    c := string(b)
-    if isWrapper(c) {
+    } else if isWrapper(c) {
         lx.data.next()
         op += c
     }
@@ -122,8 +118,7 @@ func (lx *Lexer) getOpToken(op string) token {
 //"NUMBER" as type of token regardless
 func (lx *Lexer) getNumToken(snum string) token {
     c := ""
-    for b, ok := lx.data.next(); ok; b, ok = lx.data.next() {
-        c = string(b)
+    for c = lx.data.next(); c != "@"; c = lx.data.next() {
         if !isDigit(c) { break }
         snum += c
     }
@@ -137,8 +132,7 @@ func (lx *Lexer) getNumToken(snum string) token {
 
 // str is the first character of the token (already read in by lx.next())
 func (lx *Lexer) getAmbiguousToken(str string) token {
-    for b, ok := lx.data.next(); ok; b, ok = lx.data.next() {
-        c := string(b)
+    for c := lx.data.next(); c != "@"; c = lx.data.next() {
         if ok, _ := regexp.MatchString("[_a-zA-Z0-9]", c); !ok { break }
         str += c
     }
