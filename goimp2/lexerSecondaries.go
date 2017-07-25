@@ -10,6 +10,7 @@ import (
 type token struct {
     ttype string
     value string
+	line int
 }
 
 func (t token) String() string {
@@ -45,7 +46,7 @@ func (q *Queue) pull() token {
     q.amt--
     return t
 }
-//maybe
+/***/
 func (q *Queue) isEmpty() bool {
     return q.amt == 0
 }

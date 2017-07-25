@@ -1,10 +1,10 @@
-void main() {
+func main() {
     # this is fucking juvenile
     string s = "what's up"
     print(s)
-
+    float p = 5.7
     int x = 4
-    int y = 789
+    int y = 789 + 4
     int z = x - y
     print(z - 9)
 }

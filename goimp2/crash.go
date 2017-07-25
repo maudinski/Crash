@@ -17,11 +17,14 @@ func main() {
         fmt.Println("File not read: ", os.Args[1])
         os.Exit(1)
     }
-    data := newData(fileData)
+    data := newData(fileData, os.Args[1])
     lexer := newLexer(data)
-    lexer.setKeywords("if", "func", "while", "for", "return", "print", "struct")
+    lexer.setKeywords("if", "func", "while", "for", "return", "print",
+                        "structs", "globals")
     lexer.setTypes("int", "float", "string", "char", "byte")
     for t := lexer.next(); t.ttype != "EOF"; t = lexer.next(){
         fmt.Println(t)
     }
+    //parser = newParser(lexer)
+    //ast = parser.parse()
 }

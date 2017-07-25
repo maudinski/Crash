@@ -14,6 +14,7 @@ import (
      lineNum int // tracked by new lines
      queued *Queue
      errors []string
+     lastToken token
 }
 
 func newLexer(data *Data) *Lexer {
@@ -46,31 +47,35 @@ func (lx *Lexer) next() token {
         return lx.queued.pull()
     }
     c := lx.data.next()
-    if c == "EOF" { // arbitrary, i chose this to mean EOF. Will be fine within strings
+    if c == "EOF" {
         if len(lx.errors) != 0 { // reached only if nextByte is out of data
-            for _, s := range(lx.errors){ fmt.Println(s) }
+            fmt.Println("Lexing errors:")
+			for _, s := range(lx.errors){ fmt.Println(s) }
             os.Exit(0)
         }
-        return token{"EOF", "EOF"}
+        return token{"EOF", "EOF", lx.lineNum}
     }
-    if c == " " || c == "\t" { return lx.next() // spaces
-    } else if c == "\n" { lx.lineNum++; return token{"NEWLINE", "\\n"} // \n
-    } else if isWrapper(c) { return token{c, c} // any parenthesis
-    } else if c == "#" { lx.scrapeComment(); return lx.next()  // comments
-    } else if c == "." { return token{"DOT_OP", c} // dot operator, idk what to do
-    } else if isDigit(c) { return lx.getNumToken(c) // ints and floats
-    } else if isOperator(c) { return lx.getOpToken(c) // math and bool operators
-    } else if c == "\"" { return lx.getStrToken() // strings
-    } else { return lx.getAmbiguousToken(c) } // cant classify by single byte
+    var toke token
+    if c == " " || c == "\t" { toke = lx.next() // spaces
+    } else if c == "\n" { lx.lineNum++; toke = token{"NEWLINE", "\\n", lx.lineNum} // \n
+    } else if isWrapper(c) { toke = token{c, c, lx.lineNum} // any parenthesis
+    } else if c == "#" { lx.scrapeComment(); toke = lx.next()  // comments
+    } else if c == "." { toke = token{"DOT_OP", c, lx.lineNum} // dot operator, idk what to do
+    } else if isDigit(c) { toke = lx.getNumToken(c) // ints and floats
+    } else if isOperator(c) { toke = lx.getOpToken(c) // math and bool operators
+    } else if c == "\"" { toke = lx.getStrToken() // strings
+    } else { toke = lx.getAmbiguousToken(c) } // cant classify by single byte
+    lx.lastToken = toke // only used one so far, but ehh, could be more useful
+    return toke
 }
 
-func (lx *Lexer) goBack(t token) {
+func (lx *Lexer) putBack(t token) {
     lx.queued.push(t)
 }
 //maybe
 func (lx *Lexer) peek() token {
     t := lx.next()
-    lx.goBack(t)
+    lx.putBack(t)
     return t
 }
 
@@ -97,7 +102,7 @@ func (lx *Lexer) getStrToken() token {
     if !closed {
         lx.errors=append(lx.errors, "String never closed, line " + toString(lx.lineNum-1))
     }
-    return token{"STRING", str}
+    return token{"STRING_LITERAL", str, lx.lineNum}
 }
 
 // might have to have specified operator types, like BOOL_OPERATOR and MATH_OPERATOR
@@ -109,7 +114,7 @@ func (lx *Lexer) getOpToken(op string) token {
         lx.data.next()
         op += c
     }
-    return token{"OPERATOR", op}
+    return token{"OPERATOR", op, lx.lineNum}
 }
 
 // checks to see if the number ended at an approriate spot(to the extent o the lexers
@@ -118,8 +123,10 @@ func (lx *Lexer) getOpToken(op string) token {
 //"NUMBER" as type of token regardless
 func (lx *Lexer) getNumToken(snum string) token {
     c := ""
+    isFloat := false
     for c = lx.data.next(); c != "EOF"; c = lx.data.next() {
         if !isDigit(c) { break }
+        if c == "." { isFloat = true }
         snum += c
     }
     if !canNumEndHere(c) {
@@ -127,7 +134,10 @@ func (lx *Lexer) getNumToken(snum string) token {
     }
     lx.data.goBack() // since one extra byte was grabbed
 
-    return token{"NUMBER", snum}
+    if isFloat {
+        return token{"FLOAT_LITERAL", snum, lx.lineNum}
+    }
+    return token{"INT_LITERAL", snum, lx.lineNum}
 }
 
 // str is the first character of the token (already read in by lx.next())
@@ -139,11 +149,17 @@ func (lx *Lexer) getAmbiguousToken(str string) token {
     lx.data.goBack() // since one extra was read in
     // now classify the ambiguous token
     if lx.isType(str) {
-        return token{"TYPE", str}
+        return token{"TYPE", str, lx.lineNum}
     } else if lx.isKeyword(str) {
-        return token{"KEYWORD", str}
+        return token{"KEYWORD", str, lx.lineNum}
+    } else if lx.data.peek() == "(" {
+        if lx.lastToken.value == "func" { // this means function return type have to be
+            return token{"ID", str, lx.lineNum} // AFTER the declaration
+        } else { // should be working correctly
+            return token{"CALL", str, lx.lineNum}
+        }
     }
-    return token{"ID", str}
+    return token{"ID", str, lx.lineNum}
 }
 
 // only used by getAmbiguousToken()

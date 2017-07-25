@@ -1,11 +1,22 @@
 
 # AND THE HARDEST PART YET
+
 struct bucket {
 	int waterAmt
 	string color
 	bool heavy
 }
 
+struct node {
+	int num
+	node next
+}
+
+
+globals (
+	int x = 2
+	string s = "Vfd"
+)
 
 func main() {
     int x = 10
