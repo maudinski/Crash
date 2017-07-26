@@ -56,23 +56,27 @@ func (p *Parser) parseFunction() (string, *Function) {
 }
 // couldve probably seperated this into some smaller functions but fuck it
 // i'm really bad at this. So many conditionals, just don't see a way around it
-// fill in the blanks! Fun childs game!
-func (p *Parser) parseFunctionHeader() {
+// christ this function is lengthy. But I think it works
+func (p *Parser) parseFunctionHeader() string { // not returning just a string
 	t := p.lx.next()
 	if t.ttype != "ID" {
-
+		p.errorTrashLine(t, "Expecting function identifier on line %v after func", t.line)
+		return
 	}
 	funcName := t.value
-	if p.lx.next().value != "(" {
-
+	if t2 := p.lx.next().value != "(" {
+		p.errorTrashLine(t2, "Expecting '(' after %v on line %v", t.value, t.line)
+		return
 	}
 	for t = p.lx.next() {
 		if t.ttype != "TYPE" {
-
+			p.errorTrashLine(t, "Expecting var declaration in function header, line %v", t.line)
+			return
 		}
 		t2 := p.lx.next()
 		if t2.ttype != "ID" {
-
+			p.errorTrashLine(t2, "Expecting variable identifier after %v on line %v", t.value, t.line)
+			return
 		}
 		// got a valid parameter, do something here
 		t = p.lx.next()
@@ -82,8 +86,10 @@ func (p *Parser) parseFunctionHeader() {
 		return // some bull shit
 	}
 	for t = p.lx.next(); t.value != "{"; t = p.lx.next() {
-		if t.ttype != "TYPE"{
-
+		if t.ttype != "TYPE" {
+			p.errorTrashLine(t, "Return type examples: " +
+					"') int, string {', ') bool {', ') {', etc. line %v", t.line)
+			return
 		}
 		// add it to the return types
 		if p.lx.peek().value == "," { p.lx.next() }
