@@ -144,7 +144,7 @@ func (p *Parser) parseDeclaration(t) Declaration {
 
 
 func (p *Parser) errorTrashLine(t token, format string, args ...interface{}) {
-	for t.ttype != "NEWLINE" {
+	for t.ttype != "NEWLINE" && t.ttype != "EOF" {
 		t = p.lx.next()
 	}
 	p.errors = append(p.errors, fmt.Sprintf(format, args...))
