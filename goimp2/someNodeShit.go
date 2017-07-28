@@ -81,7 +81,7 @@ type StringExpression struct {
 }
 func (se *StringExpressiong) isExpression() {}
 func (se *StringExpression) String() string{
-	return fmt.Sprintf("%v", se.value)
+	return se.value
 }
 
 
@@ -95,12 +95,36 @@ type Function struct {
 	block Block
 }
 
+/****************/
+type Id struct {
+	value string
+}
+func (id *Id) isExpression() {}
+func (id *Id) String() string {
+	return id.value
+}
+/*************/
+type Reassignment struct {
+	t token
+	id Id
+	value Expression
+}
+func (r *Reassignment) isStatement() {}
+func (r *Reassignment) String() string { // not sure if this will work since expression
+	return fmt.Sprintf("Reassignment: Id %v, value %v", r.id, r.value)// is interface
+}
 
-
-
-
-
-
+/**************/
+type Call struct {
+	id Id
+	params []Expression
+}
+func (c *Call) isStatement() {}
+func (c *Call) isExpression() {} // Semantic analyzer will have to check if a function
+//call used in an expression returns a value (And appropriate one but thats not the point)
+func (c *Call) String() string {
+	return //someshit
+}
 
 
 

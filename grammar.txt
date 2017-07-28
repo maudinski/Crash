@@ -1,4 +1,4 @@
-
+import someshit
 # AND THE HARDEST PART YET
 
 struct bucket {
@@ -10,13 +10,12 @@ struct bucket {
 struct node {
 	int num
 	node next
-}
 
 
-globals (
-	int x = 2
-	string s = "Vfd"
-)
+global float h = 8
+global string t = "vfd"
+global int x = 4
+global string s = "$"
 
 func main() {
     int x = 10

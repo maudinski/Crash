@@ -18,3 +18,11 @@ i don't need to be using make, i cant just be saying somestruct.somelice = []som
 
 function return types have to be after the prototype header shit. Because of the way I'm
 doing the lexer
+
+I'm probably writing pretty inefficient code by never returning pointers. Using
+new() would allocate memory but return an 8 byte pointer as opposed (apposed?) to
+an entire struct. Not sure though, cause there's a trade off with garbage collection
+
+If blocks only consisting of statements becomes a problem for function calls, i can
+just make all expressions implement the statement interface too, so they can be out there
+on their own. Prefer not to though

@@ -19,8 +19,8 @@ func main() {
     }
     data := newData(fileData, os.Args[1])
     lexer := newLexer(data)
-    lexer.setKeywords("if", "func", "while", "for", "return", "print",
-                        "structs", "globals")
+    lexer.setKeywords("if", "func", "while", "for", "return",
+                        "struct", "global")
     lexer.setTypes("int", "float", "string", "char", "byte")
     for t := lexer.next(); t.ttype != "EOF"; t = lexer.next(){
         fmt.Println(t)
