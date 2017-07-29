@@ -8,7 +8,7 @@ import (
 
 // something like this
 type Parser struct {
-	lx *Lexer
+	lx     *Lexer
 	errors []string
 }
 
@@ -21,12 +21,14 @@ func newParser(lx *Lexer) *Parser {
 
 // something like this
 // brain
-func (p *Parser) parse() *Ast{
+func (p *Parser) parse() *Ast {
 	ast := newAst() // these are all keywords but that's cool
 	for t := p.lx.next(); t.ttype != "EOF"; t = p.lx.next() {
-		switch (t.value) {
-		case "import": p.parseImport() //prolly need to make a lexer, etc
-		case "struct": p.parseStruct()
+		switch t.value {
+		case "import":
+			p.parseImport() //prolly need to make a lexer, etc
+		case "struct":
+			p.parseStruct()
 		case "global":
 			ast.globals = append(ast.globals, p.parseGlobal())
 		case "func":
@@ -40,20 +42,24 @@ func (p *Parser) parse() *Ast{
 	}
 	if len(p.errors) != 0 {
 		fmt.Println("Parsing error(s):")
-		for _, s := range(p.errors) { fmt.Println(s) }
+		for _, s := range p.errors {
+			fmt.Println(s)
+		}
 		os.Exit(0)
 	}
 	return ast
 }
+
 /****************GLOBAL SHIT******************/
 func (p *Parser) parseGlobal() Declaration {
-	t := p.lx.next() // doing this here cause parseDeclaration() takes the ttype token
+	t := p.lx.next()       // doing this here cause parseDeclaration() takes the ttype token
 	if t.ttype != "TYPE" { // through poor design/when parsing statements it's already
-		p.errorTrashLine(t, "Expecting delaration after 'global' on line &v", t.line)// read
+		p.errorTrashLine(t, "Expecting delaration after 'global' on line &v", t.line) // read
 		return Declaration{}
 	}
 	return p.parseDeclaration(t)
 }
+
 /**************SOME UNHANDLED SHIT RIGHT NOW***********************/
 func (p *Parser) parseImport() {
 	fmt.Println("(p.parseImport) not handling import right now. Exit")
@@ -64,6 +70,7 @@ func (p *Parser) parseStruct() {
 	fmt.Println("(p.parseStruct) Not parsing structs right now. Exit")
 	os.Exit(1)
 }
+
 /****************PARSE FUNCTION SHIT******************************/
 // something like that
 func (p *Parser) parseFunction(t token) (string, *Function) {
@@ -71,9 +78,10 @@ func (p *Parser) parseFunction(t token) (string, *Function) {
 	f.t = t
 	f.name, f.params, f.returnType = p.parseFunctionHeader()
 	f.block = p.parseBlock() // go ahead everything takes care of it's own error
-	return f.name, f  // never be returned if there exists an error (is this true? why
-				//did I comment this?)
+	return f.name, f         // never be returned if there exists an error (is this true? why
+	//did I comment this?)
 }
+
 // couldve probably seperated this into some smaller functions but fuck it
 // this is really bad rewrite this fucker
 // christ this function is lengthy. But I think it works
@@ -108,13 +116,17 @@ func (p *Parser) parseFunctionHeader() (string, []Parameter, string) { // not re
 			}
 			params = append(params, Parameter{t2, t.value, Id{t2, t2.value}})
 			t = p.lx.next()
-			if t.value == ")" { break }
-			if t.value == "," { continue }
+			if t.value == ")" {
+				break
+			}
+			if t.value == "," {
+				continue
+			}
 			p.errorTrashLine(t, "Expexting ')' or ',' after %v on line %v", t2.value, t2.line)
 			p.lx.putBack(token{"{", "{", t.line})
 			return funcName, params, ""
 		}
-	}/* should work but only doing one return type for now
+	} /* should work but only doing one return type for now
 	for t = p.lx.next(); t.value != "{"; t = p.lx.next() {
 		if t.ttype != "TYPE" {
 			p.errorTrashLine(t, "Return type examples: " +
@@ -134,7 +146,7 @@ func (p *Parser) parseFunctionHeader() (string, []Parameter, string) { // not re
 	} else {
 		p.errorTrashLine(t, "Expecting { on line %v, got %v", t.line, t.value)
 		p.lx.putBack(token{"{", "{", t.line}) // TODO all these put backs are for parse
-	}	// block. Pretty nasty function though, need to rewrite
+	} // block. Pretty nasty function though, need to rewrite
 	return funcName, params, returnType
 }
 
@@ -148,8 +160,13 @@ func (p *Parser) parseBlock() Block {
 		p.errorTrashLine(t1, "Expecting { on line %v, got %v", t1.line, t1.value)
 	}
 	for t := p.lx.next(); t.value != "}"; t = p.lx.next() {
-		if t.ttype == "NEWLINE" { continue }
-		if t.ttype == "EOF" { eof = true; break }
+		if t.ttype == "NEWLINE" {
+			continue
+		}
+		if t.ttype == "EOF" {
+			eof = true
+			break
+		}
 		b = append(b, p.parseStatement(t))
 	}
 	if eof {
@@ -160,7 +177,7 @@ func (p *Parser) parseBlock() Block {
 
 //user by parse function. brain for statment parsing
 func (p *Parser) parseStatement(t token) Statement {
-	switch (t.ttype) {
+	switch t.ttype {
 	case "TYPE": // for structs, might have to lex and parse and analze before funcs
 		return p.parseDeclaration(t)
 	case "KEYWORD": // if, for, etc
@@ -172,7 +189,7 @@ func (p *Parser) parseStatement(t token) Statement {
 	default:
 		p.errorTrashLine(t, "Not a valid statement on line %v", t.line)
 		return Declaration{} // just need to return somestatment, arbitrary
-	}	// parser will exit if any errors exist
+	} // parser will exit if any errors exist
 
 }
 
@@ -187,22 +204,29 @@ func (p *Parser) parseReassignment(t token) Reassignment {
 }
 
 // maybe not
-func (p *Parser) parseFunctionCall(t token) Call{
+func (p *Parser) parseFunctionCall(t token) Call {
 	c := Call{t: t, id: Id{t, t.value}}
 	c.params = make([]Expression, 0) // or however you do this
 	//NOTE it's not possible for the next token to not be a (, because the lexer will
 	//only provide a CALL type if it sees a (. So just consume it
 	p.lx.next()
 	t = p.lx.next()
-	if t.value == ")" { return c }
+	if t.value == ")" {
+		return c
+	}
 	p.lx.putBack(t)
 	err := false
 	for ; true; t = p.lx.next() { // break logic is handled in loop
 		c.params = append(c.params, p.parseExpression())
 		t = p.lx.next()
-		if t.value == ")" { break
-		} else if t.value == "," { continue
-		} else { err = true; break }
+		if t.value == ")" {
+			break
+		} else if t.value == "," {
+			continue
+		} else {
+			err = true
+			break
+		}
 	}
 	if err {
 		p.errorTrashLine(t, "Expecting ')' or ',' in function call, got '%v'. Line %v", t.value, t.line)
@@ -241,7 +265,9 @@ func (p *Parser) parseExpression() Expression {
 	exp := ""
 	var t token
 	for t = p.lx.next(); true; t = p.lx.next() { // logic handled in loop. dummy code anyways
-		if t.value == ")" || t.value =="," || t.value == "\\n" || t.value == "{" { break }
+		if t.value == ")" || t.value == "," || t.value == "\\n" || t.value == "{" {
+			break
+		}
 		exp += t.value
 	}
 	p.lx.putBack(t)
@@ -250,7 +276,7 @@ func (p *Parser) parseExpression() Expression {
 
 /*************KEYWORD PARSING****************/
 func (p *Parser) parseKeyword(t token) Statement {
-	switch (t.value) {
+	switch t.value {
 	case "if":
 		return p.parseIf(t)
 	case "while":
@@ -260,8 +286,9 @@ func (p *Parser) parseKeyword(t token) Statement {
 	default:
 		p.errorTrashLine(t, "Invalid use of keyword '%v' on line %v", t.value, t.line)
 		return Declaration{} // arbitrary, just need to return something
-	}	// parser will exit if any errors exist
+	} // parser will exit if any errors exist
 }
+
 // TODO go through and add tokens to everything
 func (p *Parser) parseIf(t token) If {
 	i := If{t: t, exp: p.parseExpression(), trueBlock: p.parseBlock()}
@@ -289,4 +316,3 @@ func (p *Parser) errorTrashLine(t token, format string, args ...interface{}) {
 	}
 	p.errors = append(p.errors, fmt.Sprintf(format, args...))
 }
-
