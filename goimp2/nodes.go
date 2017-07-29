@@ -72,7 +72,7 @@ type FloatExpression struct{
 }
 func (fe *FloatExpression) isExpression() {}
 func (fe *FloatExpression) String() string{
-	return fmt.Sprintf("%v", fe.value)
+	return string(fe.value)
 }
 /******this should make sense ****/
 type StringExpression struct {
@@ -125,8 +125,14 @@ func (c *Call) isExpression() {} // Semantic analyzer will have to check if a fu
 func (c *Call) String() string {
 	return //someshit
 }
-
-
+/********************/
+type FakeExpression struct {
+	value string
+}
+func (fe *FakeExpression) isExpression(){}
+func (fe *FakeExpression) String() string {
+	return fe.value
+}
 
 
 

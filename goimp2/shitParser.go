@@ -13,10 +13,21 @@ type Ast struct {
 	functions map[string]Function
 }
 
+func (ast *Ast) printAst() {
+	print("not doing anything \n")
+}
+
 // something like this
 type Parser struct {
 	lx *Lexer
 	errors []string
+}
+
+func newParser(lx *lexer) *Parser {
+	p := new(Parser)
+	p.lx = lx
+	p.errors = make([]string, 0)
+	return p
 }
 
 // something like this
@@ -127,7 +138,6 @@ func (p *Parser) parseBlock() *Block {
 	return b
 }
 
-
 //user by parse function. brain for statment parsing
 func (p *Parser) parseStatment(t token) Statement {
 	switch (t.ttype) {
@@ -216,8 +226,14 @@ func (p *Parser) parseDeclaration(t) Declaration {
 // at these tokens so far
 // should also leave EVERYTHING after words intact, so if it reads in a comma, puts it
 // the fuck back
-func (p *Parser) parseExpression() /*notSure*/ {
-
+func (p *Parser) parseExpression() Expression {
+	//TODO, this just sets up a fake expression. For debugging
+	exp := ""
+	for t := p.lx.parser() { // BUG wont work with parenthesis expressions lol
+		if t.value == ")" || t.value =="," || t.value == "\\n" { break }
+		exp += t.value
+	}
+	return FakeExpression{value: exp}
 }
 
 func (p *Parser) errorTrashLine(t token, format string, args ...interface{}) {
