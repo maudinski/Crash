@@ -38,13 +38,17 @@ func (es *EnvStack) add(id string, ttype string) {
 // checks all environments for existing var name
 // seems alright
 func (es *EnvStack) check(id string) (bool, ttype) {
-    for i := 0; i <= es.farthestPos; i++ {
+    for i := es.farthestPos; i >= 0; i-- { // start from the top env
         ok, ttype := es.stack[i].check(id)
         if ok {
             return true, ttype
         }
     }
     return false, ""
+}
+
+func (es *EnvStack) checkTop(id string) (bool, ttype) {
+    return es.stack[es.farthestPos].check(id)
 }
 
 /******/

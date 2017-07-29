@@ -23,7 +23,6 @@ func main() {
 	lexer.setTypes("int", "float", "string", "char", "byte")
 	parser := newParser(lexer)
 	ast := parser.parse()
-	fmt.Println(ast)
-	//parser = newParser(lexer)
-	//ast = parser.parse()
+	analyzer := newSemAn(ast)
+	analyzer.analyze()
 }

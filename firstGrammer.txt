@@ -19,6 +19,7 @@ func main() {
             print("someothershit")
         }
     }
+    x = 9
     int y = 789 + 4
     int z = x - y
     print(z - 9)
