@@ -1,10 +1,31 @@
+global int fuck = 7
+global string doublefucn = "VFdvfd"
+
 func main() {
     # this is fucking juvenile
     string s = "what's up"
     print(s)
     float p = 5.7
     int x = 4
+    if x > 9 {
+        print(x)
+    } else {
+        print("nope")
+    }
+    while x < 30 {
+        i = i + 1
+        print(i)
+        while true {
+            print("someothershit")
+        }
+    }
     int y = 789 + 4
     int z = x - y
     print(z - 9)
+}
+
+func someFunc(int x, string y) int {
+     print(x)
+     print()
+     return x
 }

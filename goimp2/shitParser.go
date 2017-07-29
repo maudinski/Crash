@@ -24,18 +24,18 @@ func newParser(lx *Lexer) *Parser {
 func (p *Parser) parse() *Ast{
 	ast := newAst() // these are all keywords but that's cool
 	for t := p.lx.next(); t.ttype != "EOF"; t = p.lx.next() {
-		switch (t.ttype) {
-		case "IMPORT": p.parseImport() //prolly need to make a lexer, etc
-		case "STRUCT": p.parseStruct()
-		case "GLOBAL":
+		switch (t.value) {
+		case "import": p.parseImport() //prolly need to make a lexer, etc
+		case "struct": p.parseStruct()
+		case "global":
 			ast.globals = append(ast.globals, p.parseGlobal())
-		case "FUNC":
+		case "func":
 			k, v := p.parseFunction(t)
 			ast.functions[k] = v
-		case "NEWLINE":
+		case "\\n":
 			continue
 		default:
-			p.errorTrashLine(t, "Unkown statement on line %v", t.line)
+			p.errorTrashLine(t, "Random statement outside function on line %v", t.line)
 		}
 	}
 	if len(p.errors) != 0 {
@@ -69,43 +69,52 @@ func (p *Parser) parseStruct() {
 func (p *Parser) parseFunction(t token) (string, *Function) {
 	f := new(Function)
 	f.t = t
-	var name string
-	name, f.params, f.returnType = p.parseFunctionHeader()
+	f.name, f.params, f.returnType = p.parseFunctionHeader()
 	f.block = p.parseBlock() // go ahead everything takes care of it's own error
-	return name, f  // never be returned if there exists an error (is this true? why
+	return f.name, f  // never be returned if there exists an error (is this true? why
 				//did I comment this?)
 }
 // couldve probably seperated this into some smaller functions but fuck it
 // this is really bad rewrite this fucker
 // christ this function is lengthy. But I think it works
-func (p *Parser) parseFunctionHeader() string { // not returning just a string
+// ma fucking cheted. Works tho
+// TODO rewrite
+func (p *Parser) parseFunctionHeader() (string, []Parameter, string) { // not returning just a string
 	t := p.lx.next()
+	params := make([]Parameter, 0)
 	if t.ttype != "ID" {
 		p.errorTrashLine(t, "Expecting function identifier on line %v after func", t.line)
-		return
+		p.lx.putBack(token{"{", "{", t.line})
+		return "", params, ""
 	}
 	funcName := t.value
-	if t2 := p.lx.next().value != "(" {
+	if t2 := p.lx.next(); t2.value != "(" {
 		p.errorTrashLine(t2, "Expecting '(' after %v on line %v", t.value, t.line)
-		return
+		p.lx.putBack(token{"{", "{", t.line})
+		return funcName, params, ""
 	}
-	for t = p.lx.next() {
-		if t.ttype != "TYPE" {
-			p.errorTrashLine(t, "Expecting var declaration in function header, line %v", t.line)
-			return
+	if t = p.lx.next(); t.value != ")" {
+		for ; true; t = p.lx.next() { // exiting handled in loop. I prefer while loops
+			if t.ttype != "TYPE" {
+				p.errorTrashLine(t, "Expecting var declaration in function header, line %v", t.line)
+				p.lx.putBack(token{"{", "{", t.line})
+				return funcName, params, ""
+			}
+			t2 := p.lx.next()
+			if t2.ttype != "ID" {
+				p.errorTrashLine(t2, "Expecting variable identifier after %v on line %v", t.value, t.line)
+				p.lx.putBack(token{"{", "{", t.line})
+				return funcName, params, ""
+			}
+			params = append(params, Parameter{t2, t.value, Id{t2, t2.value}})
+			t = p.lx.next()
+			if t.value == ")" { break }
+			if t.value == "," { continue }
+			p.errorTrashLine(t, "Expexting ')' or ',' after %v on line %v", t2.value, t2.line)
+			p.lx.putBack(token{"{", "{", t.line})
+			return funcName, params, ""
 		}
-		t2 := p.lx.next()
-		if t2.ttype != "ID" {
-			p.errorTrashLine(t2, "Expecting variable identifier after %v on line %v", t.value, t.line)
-			return
-		}
-		// got a valid parameter, do something here
-		t = p.lx.next()
-		if t.value == ")" { break }
-		if t.value == "," { continue }
-		p.errorTrashLine(t, "Expexting ')' or ',' after %v on line %v", t2.value, t2.line)
-		return // some bull shit
-	}
+	}/* should work but only doing one return type for now
 	for t = p.lx.next(); t.value != "{"; t = p.lx.next() {
 		if t.ttype != "TYPE" {
 			p.errorTrashLine(t, "Return type examples: " +
@@ -114,8 +123,19 @@ func (p *Parser) parseFunctionHeader() string { // not returning just a string
 		}
 		// add it to the return types
 		if p.lx.peek().value == "," { p.lx.next() }
-	}
-	return funcName,
+	}*/
+	/***this is for one return type***/
+	t = p.lx.next()
+	returnType := ""
+	if t.ttype == "TYPE" {
+		returnType = t.value
+	} else if t.value == "{" {
+		p.lx.putBack(t)
+	} else {
+		p.errorTrashLine(t, "Expecting { on line %v, got %v", t.line, t.value)
+		p.lx.putBack(token{"{", "{", t.line}) // TODO all these put backs are for parse
+	}	// block. Pretty nasty function though, need to rewrite
+	return funcName, params, returnType
 }
 
 /****within function for the most part***/
@@ -130,7 +150,7 @@ func (p *Parser) parseBlock() Block {
 	for t := p.lx.next(); t.value != "}"; t = p.lx.next() {
 		if t.ttype == "NEWLINE" { continue }
 		if t.ttype == "EOF" { eof = true; break }
-		b.appendStatement(p.parseStatement(t))
+		b = append(b, p.parseStatement(t))
 	}
 	if eof {
 		p.errorTrashLine(t1, "Block never closed on line %v. Need }", t1.line)
@@ -173,9 +193,11 @@ func (p *Parser) parseFunctionCall(t token) Call{
 	//NOTE it's not possible for the next token to not be a (, because the lexer will
 	//only provide a CALL type if it sees a (. So just consume it
 	p.lx.next()
-	if p.lx.peek().value == ")" { return c }
+	t = p.lx.next()
+	if t.value == ")" { return c }
+	p.lx.putBack(t)
 	err := false
-	for t = p.lx.next(); true; t = p.lx.next() { // break logic is handled in loop
+	for ; true; t = p.lx.next() { // break logic is handled in loop
 		c.params = append(c.params, p.parseExpression())
 		t = p.lx.next()
 		if t.value == ")" { break
@@ -217,10 +239,12 @@ func (p *Parser) parseDeclaration(t token) Declaration {
 func (p *Parser) parseExpression() Expression {
 	//TODO, this just sets up a fake expression. For debugging
 	exp := ""
-	for t := p.lx.next(); true; t = p.lx.next() { // logic handled in loop. dummy code anyways
-		if t.value == ")" || t.value =="," || t.value == "\\n" { break }
+	var t token
+	for t = p.lx.next(); true; t = p.lx.next() { // logic handled in loop. dummy code anyways
+		if t.value == ")" || t.value =="," || t.value == "\\n" || t.value == "{" { break }
 		exp += t.value
 	}
+	p.lx.putBack(t)
 	return FakeExpression{value: exp}
 }
 

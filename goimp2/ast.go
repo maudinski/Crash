@@ -30,7 +30,7 @@ func (ast *Ast) String() string {
      }
      str += "\n Functions: "
      for _, f := range(ast.functions) {
-          str += f.String()
+          str += "\n\n" + f.String()
      }
      return str
 }

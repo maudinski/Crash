@@ -2,6 +2,7 @@ package main
 
 import(
 	"fmt"
+	"strconv"
 )
 
 type Node interface {
@@ -23,18 +24,16 @@ func newBlock() Block {
 	b := make([]Statement, 0)
 	return b
 }
-func (b Block) appendStatement(s Statement) {
-	b = append(b, s)
-}
 func (b Block) String() string {
 	str := "Block: "
+	str += "Statment amt = " + strconv.Itoa(len(b)) +"\n"
 	for _, state := range(b) {
 		switch s := state.(type) {
 		default:
 			str += "\t" + s.String() + "\n"
 		} // a tour of go i suggesting that s will be the approriate variable...
 	}	// in which case this should work in all cases. Jesus I fucking hope
-	return str
+	return str // it does :)
 }
 /*******/
 type If struct {
@@ -46,7 +45,7 @@ type If struct {
 }
 func (i If) isStatement() {}
 func (i If) String() string {
-	return fmt.Sprintf("If:Expr: %v \nTrue block: %v \nFalse block: %v",
+	return fmt.Sprintf("\n\tIf:Expr: %v \n\tTrue block: %v \n\tFalse block: %v\n",
 						i.exp.String(),
 						i.trueBlock.String(),
 						i.falseBlock.String())
@@ -114,11 +113,12 @@ type Function struct {
 	block Block
 }
 func (f Function) String() string {
-	str := fmt.Sprintf("Function name %v, params:", f.name)
-	for _, param := range(f.params) {
-		str += param.String()
+	str := fmt.Sprintf("Function name: %v | Parameters: ", f.name)
+	for i, param := range(f.params) {
+		str += strconv.Itoa(1+i) + ": " + param.String()
 	}
-	return str + "Block: \n" + f.block.String()
+	str += " | Return type: " + f.returnType
+	return str + "\n" + f.block.String()
 }
 
 type Parameter struct {
@@ -127,7 +127,7 @@ type Parameter struct {
 	id Id
 }
 func (p Parameter) String() string {
-	return fmt.Sprintf("type: %v, id %v ", p.ttype, p.id)
+	return fmt.Sprintf("type: %v, Id: %v ", p.ttype, p.id)
 }
 /****************/
 type Id struct {
@@ -194,7 +194,7 @@ type Return struct {
 }
 func (r Return) isStatement() {}
 func (r Return) String() string {
-	return r.value.String()
+	return "Return " + r.value.String()
 }
 
 

@@ -43,34 +43,34 @@ func (lx *Lexer) setTypes(t ...string) {
 //from the parser (it will be the last call because this function will be returning false)
 //, if the errors []string isnt empty, it will print them all out and exit the program
 func (lx *Lexer) next() token {
-    if !lx.queued.isEmpty() {
-        return lx.queued.pull()
-    }
-    c := lx.data.next()
-    if c == "EOF" {
+     if !lx.queued.isEmpty() {
+          return lx.queued.pull()
+     }
+     c := lx.data.next()
+     if c == "EOF" {
         if len(lx.errors) != 0 { // reached only if nextByte is out of data
             fmt.Println("Lexing errors:")
-			for _, s := range(lx.errors){ fmt.Println(s) }
+     		for _, s := range(lx.errors){ fmt.Println(s) }
             os.Exit(0)
         }
         return token{"EOF", "EOF", lx.lineNum}
-    }
-    var toke token
-    if c == " " || c == "\t" { toke = lx.next() // spaces
-    } else if c == "\n" { lx.lineNum++; toke = token{"NEWLINE", "\\n", lx.lineNum} // \n
-    } else if isWrapper(c) { toke = token{c, c, lx.lineNum} // any parenthesis
-    } else if c == "#" { lx.scrapeComment(); toke = lx.next()  // comments
-    } else if c == "." { toke = token{"DOT_OP", c, lx.lineNum} // dot operator, idk what to do
-    } else if isDigit(c) { toke = lx.getNumToken(c) // ints and floats
-    } else if isOperator(c) { toke = lx.getOpToken(c) // math and bool operators
-    } else if c == "\"" { toke = lx.getStrToken() // strings
-    } else { toke = lx.getAmbiguousToken(c) } // cant classify by single byte
-    lx.lastToken = toke // only used one so far, but ehh, could be more useful
-    return toke
+     }
+     var toke token
+     if c == " " || c == "\t" { toke = lx.next() // spaces
+     } else if c == "\n" { lx.lineNum++; toke = token{"NEWLINE", "\\n", lx.lineNum} // \n
+     } else if isWrapper(c) { toke = token{c, c, lx.lineNum} // any parenthesis
+     } else if c == "#" { lx.scrapeComment(); toke = lx.next()  // comments
+     } else if c == "." { toke = token{"DOT_OP", c, lx.lineNum} // dot operator, idk what to do
+     } else if isDigit(c) { toke = lx.getNumToken(c) // ints and floats
+     } else if isOperator(c) { toke = lx.getOpToken(c) // math and bool operators
+     } else if c == "\"" { toke = lx.getStrToken() // strings
+     } else { toke = lx.getAmbiguousToken(c) } // cant classify by single byte
+     lx.lastToken = toke // only used one so far, but ehh, could be more useful
+     return toke
 }
 
 func (lx *Lexer) putBack(t token) {
-    lx.queued.push(t)
+     lx.queued.push(t)
 }
 //maybe
 func (lx *Lexer) peek() token {

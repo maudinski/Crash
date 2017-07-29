@@ -22,7 +22,7 @@ func newData (fileData []byte, fileName string) *Data {
 // arbitrarily chose @ to mean EOF. Will be fine within strings tho
 func (d *Data) next() string {
     d.index++
-    if d.index == d.length {
+    if d.index >= d.length {
         return "EOF"
     }
     return string(d.data[d.index])
