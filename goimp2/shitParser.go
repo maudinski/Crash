@@ -6,24 +6,13 @@ import (
 	"os"
 )
 
-// something like that
-type Ast struct {
-	structs []string // as in fuck this for now
-	globals []Declaration
-	functions map[string]Function
-}
-
-func (ast *Ast) printAst() {
-	print("not doing anything \n")
-}
-
 // something like this
 type Parser struct {
 	lx *Lexer
 	errors []string
 }
 
-func newParser(lx *lexer) *Parser {
+func newParser(lx *Lexer) *Parser {
 	p := new(Parser)
 	p.lx = lx
 	p.errors = make([]string, 0)
@@ -39,7 +28,7 @@ func (p *Parser) parse() *Ast{
 		case "IMPORT": p.parseImport() //prolly need to make a lexer, etc
 		case "STRUCT": p.parseStruct()
 		case "GLOBAL":
-			Ast.globals = append(ast.globals, p.parseGlobal())
+			ast.globals = append(ast.globals, p.parseGlobal())
 		case "FUNC":
 			k, v := p.parseFunction(t)
 			ast.functions[k] = v
@@ -77,10 +66,11 @@ func (p *Parser) parseStruct() {
 }
 /****************PARSE FUNCTION SHIT******************************/
 // something like that
-func (p *Parser) parseFunction() (string, *Function) {
-	f := new(Function{t: t})
+func (p *Parser) parseFunction(t token) (string, *Function) {
+	f := new(Function)
+	f.t = t
 	var name string
-	name, f.parameters, f.returnType = p.parseFunctionHeader()
+	name, f.params, f.returnType = p.parseFunctionHeader()
 	f.block = p.parseBlock() // go ahead everything takes care of it's own error
 	return name, f  // never be returned if there exists an error (is this true? why
 				//did I comment this?)
@@ -125,22 +115,31 @@ func (p *Parser) parseFunctionHeader() string { // not returning just a string
 		// add it to the return types
 		if p.lx.peek().value == "," { p.lx.next() }
 	}
-	return funcName, /*parameters*/, /*return type(s), if any*/
+	return funcName,
 }
 
 /****within function for the most part***/
 /***SOME PARSE BLOCKS/STATEMENTS SHIT******/
-func (p *Parser) parseBlock() *Block {
+func (p *Parser) parseBlock() Block {
 	b := newBlock()
+	eof := false
+	var t1 token
+	if t1 = p.lx.next(); t1.value != "{" {
+		p.errorTrashLine(t1, "Expecting { on line %v, got %v", t1.line, t1.value)
+	}
 	for t := p.lx.next(); t.value != "}"; t = p.lx.next() {
 		if t.ttype == "NEWLINE" { continue }
-		b.appendStatement(p.parseStatement())//TODO
+		if t.ttype == "EOF" { eof = true; break }
+		b.appendStatement(p.parseStatement(t))
+	}
+	if eof {
+		p.errorTrashLine(t1, "Block never closed on line %v. Need }", t1.line)
 	}
 	return b
 }
 
 //user by parse function. brain for statment parsing
-func (p *Parser) parseStatment(t token) Statement {
+func (p *Parser) parseStatement(t token) Statement {
 	switch (t.ttype) {
 	case "TYPE": // for structs, might have to lex and parse and analze before funcs
 		return p.parseDeclaration(t)
@@ -152,8 +151,8 @@ func (p *Parser) parseStatment(t token) Statement {
 		return p.parseFunctionCall(t)
 	default:
 		p.errorTrashLine(t, "Not a valid statement on line %v", t.line)
-		return Statement{}
-	}
+		return Declaration{} // just need to return somestatment, arbitrary
+	}	// parser will exit if any errors exist
 
 }
 
@@ -167,30 +166,16 @@ func (p *Parser) parseReassignment(t token) Reassignment {
 	return r
 }
 
-func (p *Parser) parseKeyword(t token) Statement {
-	switch (t.value) {
-	case "if":
-		return p.parseIf()
-	case "for":
-		return p.parseFor()
-	case "return":
-		return p.parseReturn()
-	default:
-		p.errorTrashLine(t, "Invalid use of keyword '%v' on line %v", t.value, t.line)
-		return Statement{}
-	}
-}
-
 // maybe not
 func (p *Parser) parseFunctionCall(t token) Call{
-	c := Call{id: Id{t.value}}
+	c := Call{t: t, id: Id{t, t.value}}
 	c.params = make([]Expression, 0) // or however you do this
 	//NOTE it's not possible for the next token to not be a (, because the lexer will
 	//only provide a CALL type if it sees a (. So just consume it
 	p.lx.next()
 	if p.lx.peek().value == ")" { return c }
 	err := false
-	for t = p.lx.next() {
+	for t = p.lx.next(); true; t = p.lx.next() { // break logic is handled in loop
 		c.params = append(c.params, p.parseExpression())
 		t = p.lx.next()
 		if t.value == ")" { break
@@ -204,13 +189,13 @@ func (p *Parser) parseFunctionCall(t token) Call{
 }
 
 // will be used by parseStatement (which is used by parse function) and parseGlobals
-func (p *Parser) parseDeclaration(t) Declaration {
+func (p *Parser) parseDeclaration(t token) Declaration {
 	d := Declaration{t: t, ttype: t.value}
 	if t = p.lx.next(); t.ttype != "ID" {
 		p.errorTrashLine(t, "Expecting variable name after %v on line %v", d.ttype, t.line)
-		return d,
+		return d
 	}
-	d.id = t.value
+	d.id = Id{t, t.value}
 	if t = p.lx.next(); t.value != "=" {
 		p.errorTrashLine(t, "Expecting '=' after %v on line %v", d.id, t.line)
 		return d
@@ -227,14 +212,51 @@ func (p *Parser) parseDeclaration(t) Declaration {
 // at these tokens so far
 // should also leave EVERYTHING after words intact, so if it reads in a comma, puts it
 // the fuck back
+// when written, could probably check that the next token is something valid? say, has
+// to be a a comma, ), newline, or }
 func (p *Parser) parseExpression() Expression {
 	//TODO, this just sets up a fake expression. For debugging
 	exp := ""
-	for t := p.lx.parser() { // BUG wont work with parenthesis expressions lol
+	for t := p.lx.next(); true; t = p.lx.next() { // logic handled in loop. dummy code anyways
 		if t.value == ")" || t.value =="," || t.value == "\\n" { break }
 		exp += t.value
 	}
 	return FakeExpression{value: exp}
+}
+
+/*************KEYWORD PARSING****************/
+func (p *Parser) parseKeyword(t token) Statement {
+	switch (t.value) {
+	case "if":
+		return p.parseIf(t)
+	case "while":
+		return p.parseWhile(t)
+	case "return":
+		return p.parseReturn(t)
+	default:
+		p.errorTrashLine(t, "Invalid use of keyword '%v' on line %v", t.value, t.line)
+		return Declaration{} // arbitrary, just need to return something
+	}	// parser will exit if any errors exist
+}
+// TODO go through and add tokens to everything
+func (p *Parser) parseIf(t token) If {
+	i := If{t: t, exp: p.parseExpression(), trueBlock: p.parseBlock()}
+	if t = p.lx.next(); t.value == "else" {
+		i.isElse = true
+		i.falseBlock = p.parseBlock()
+	} else {
+		i.isElse = false
+	}
+	return i
+}
+
+func (p *Parser) parseWhile(t token) While {
+	return While{t, p.parseExpression(), p.parseBlock()}
+}
+
+//will only work for single return types
+func (p *Parser) parseReturn(t token) Return {
+	return Return{t, p.parseExpression()}
 }
 
 func (p *Parser) errorTrashLine(t token, format string, args ...interface{}) {

@@ -19,12 +19,12 @@ func main() {
     }
     data := newData(fileData, os.Args[1])
     lexer := newLexer(data)
-    lexer.setKeywords("if", "func", "while", "for", "return",
+    lexer.setKeywords("if", "func", "while", /*"for",*/ "return",
                         "struct", "global")
     lexer.setTypes("int", "float", "string", "char", "byte")
-    parser = newParser(lexer)
-    ast := parser.Parse()
-    ast.printAst()
+    parser := newParser(lexer)
+    ast := parser.parse()
+    fmt.Println(ast)
     //parser = newParser(lexer)
     //ast = parser.parse()
 }
