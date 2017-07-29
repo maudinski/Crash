@@ -79,7 +79,8 @@ func (p *Parser) parseStruct() {
 // something like that
 func (p *Parser) parseFunction() (string, *Function) {
 	f := new(Function{t: t})
-	name, f.parameters, f.returnType := p.parseFunctionHeader()
+	var name string
+	name, f.parameters, f.returnType = p.parseFunctionHeader()
 	f.block = p.parseBlock() // go ahead everything takes care of it's own error
 	return name, f  // never be returned if there exists an error (is this true? why
 				//did I comment this?)
