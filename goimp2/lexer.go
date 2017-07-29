@@ -59,27 +59,15 @@ func (lx *Lexer) next() token {
 		return token{"EOF", "EOF", lx.lineNum}
 	}
 	var toke token
-	if c == " " || c == "\t" {
-		toke = lx.next() // spaces
-	} else if c == "\n" {
-		lx.lineNum++
-		toke = token{"NEWLINE", "\\n", lx.lineNum} // \n
-	} else if isWrapper(c) {
-		toke = token{c, c, lx.lineNum} // any parenthesis
-	} else if c == "#" {
-		lx.scrapeComment()
-		toke = lx.next() // comments
-	} else if c == "." {
-		toke = token{"DOT_OP", c, lx.lineNum} // dot operator, idk what to do
-	} else if isDigit(c) {
-		toke = lx.getNumToken(c) // ints and floats
-	} else if isOperator(c) {
-		toke = lx.getOpToken(c) // math and bool operators
-	} else if c == "\"" {
-		toke = lx.getStrToken() // strings
-	} else {
-		toke = lx.getAmbiguousToken(c)
-	} // cant classify by single byte
+	if c == " " || c == "\t" { toke = lx.next() // spaces
+	} else if c == "\n" { lx.lineNum++; toke = token{"NEWLINE", "\\n", lx.lineNum} // \n
+	} else if isWrapper(c) { toke = token{c, c, lx.lineNum} // any parenthesis
+	} else if c == "#" { lx.scrapeComment(); toke = lx.next() // comments
+	} else if c == "." { toke = token{"DOT_OP", c, lx.lineNum} // dot operator, idk what to do
+	} else if isDigit(c) { toke = lx.getNumToken(c) // ints and floats
+	} else if isOperator(c) { toke = lx.getOpToken(c) // math and bool operators
+	} else if c == "\"" { toke = lx.getStrToken() // strings
+	} else { toke = lx.getAmbiguousToken(c) } // cant classify by single byte
 	lx.lastToken = toke // only used one so far, but ehh, could be more useful
 	return toke
 }
