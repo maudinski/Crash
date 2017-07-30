@@ -1,6 +1,6 @@
 global int fuck = 7
 global string doublefucn = "VFdvfd"
-
+ 
 func main() {
     # this is fucking juvenile
     string s = "what's up"

@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 )
-
+ 
 func main() {
 	if len(os.Args) != 2 {
 		fmt.Println("Enter one file")

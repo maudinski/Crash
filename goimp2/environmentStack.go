@@ -3,7 +3,7 @@ package main
 import (
 
 )
-
+ 
 type EnvStack struct {
     stack []*Environment
     farthestPos int

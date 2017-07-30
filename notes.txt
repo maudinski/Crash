@@ -27,4 +27,4 @@ If blocks only consisting of statements becomes a problem for function calls, i 
 just make all expressions implement the statement interface too, so they can be out there
 on their own. Prefer not to though
 
-a lot of this hasnt been error tested :/
+a lot of this hasnt been error tested

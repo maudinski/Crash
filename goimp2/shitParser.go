@@ -192,7 +192,7 @@ func (p *Parser) parseStatement(t token) Statement {
 	} // parser will exit if any errors exist
 
 }
-
+ 
 func (p *Parser) parseReassignment(t token) Reassignment {
 	r := Reassignment{t: t, id: Id{value: t.value}}
 	if p.lx.next().value != "=" {

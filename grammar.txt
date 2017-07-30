@@ -10,8 +10,7 @@ struct bucket {
 struct node {
 	int num
 	node next
-
-
+ 
 global float h = 8
 global string t = "vfd"
 global int x = 4

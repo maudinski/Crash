@@ -109,7 +109,7 @@ func (lx *Lexer) getStrToken() token {
 	}
 	return token{"STRING_LITERAL", str, lx.lineNum}
 }
-
+ 
 // might have to have specified operator types, like BOOL_OPERATOR and MATH_OPERATOR
 func (lx *Lexer) getOpToken(op string) token {
 	c := lx.data.peek()

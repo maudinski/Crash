@@ -7,7 +7,7 @@ import (
     //"strconv" // atom doesn't recognize that comment lol
     "os"
 )
-
+ 
 type DeclaredFunc struct {
     name string // redundent cause it's being stored in a mao by it's name but ohwell
     params []string // slice of the types

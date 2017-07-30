@@ -45,7 +45,7 @@ func (q *Queue) pull() token {
 	q.amt--
 	return t
 }
-
+ 
 /***/
 func (q *Queue) isEmpty() bool {
 	return q.amt == 0
