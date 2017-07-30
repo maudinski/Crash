@@ -115,7 +115,7 @@ func (lx *Lexer) getOpToken(op string) token {
 	c := lx.data.peek()
 	if c == "EOF" { // more of a parsing error than lexing, but ehh, we're here
 		lx.errors = append(lx.errors, "Nothing after operator, line "+toString(lx.lineNum))
-	} else if isWrapper(c) {
+	} else if isOperator(c) {
 		lx.data.next()
 		op += c
 	}

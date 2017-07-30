@@ -1,8 +1,10 @@
-package go
-
+package main
+// point of this is to check if variables exist in the scope, functions called where
+// already defined/built in, expressions are valid, and type checking for expression
+// and variable assignments/reassignments. Final string of error checking
 import (
     "fmt"
-    "strconv"
+    //"strconv" // atom doesn't recognize that comment lol
     "os"
 )
 
@@ -14,18 +16,22 @@ type DeclaredFunc struct {
 
 type SemAn struct {
     ast *Ast
-    es EnvironmentStack
+    es *EnvStack
     errors []string
+    // phase1. Holds info from function headers. Only for a more convenient format
+    // than the []*Function in ast
     declaredFuncs map[string]DeclaredFunc
-    currentFunction string // holds the name of the current function being parsed
-}                           // for analyzing return statments
+    // holds the name of the current function being parsed
+    // for analyzing return statments
+    currentFunc string
+}
 
 func newSemAn(ast *Ast) *SemAn {
     sa := new(SemAn)
     sa.ast = ast
-    sa.es = newEnvironemntStack()
+    sa.es = newEnvironmentStack()
     sa.errors = make([]string, 0)
-    sa.funcs = make(map[string]DeclaredFunc, 0)
+    sa.declaredFuncs = make(map[string]DeclaredFunc, 0)
     return sa
 }
 
@@ -53,7 +59,7 @@ func (sa *SemAn) phase1() {
         for _, p := range(f.params) {
             params = append(params, p.ttype) // slice of the types
         }
-        sa.declaredFuncs[n] = DeclaredFunc{n, params, f.returnType})
+        sa.declaredFuncs[n] = DeclaredFunc{n, params, f.returnType}
     }
 
 }
@@ -62,27 +68,19 @@ func (sa *SemAn) phase1() {
 func (sa *SemAn) phase2() {
     for name, f := range(sa.ast.functions) {
         sa.es.pushNewEnv() // new env created before each block is entered
-        for _, p := f.params { // add all the parameters to the environement
+        for _, p := range(f.params) { // add all the parameters to the environement
             sa.es.add(p.id.value, p.ttype)
         }
-        sa.currentFunction = name
+        sa.currentFunc = name
         sa.analyzeBlock(f.block)
         sa.es.popEnv() // pop the environment
     }
 }
 
-func (sa *SemAn) analyzeBlock(block Block) {
-    for _, statement := range(block){
-        sa.analyzeStatementSwitch(statements)
-    }
-}
-
 /******this switches control over to the statement********/
-
-func (sa *SemAn) analyzeStatementSwitch(s Statement) {
-    switch state := s.(type){
-    default:
-        state.analyze(sa)
+func (sa *SemAn) analyzeBlock(block Block) {
+    for _, s := range(block){
+        s.analyze(sa)
     }
 }
 
@@ -91,7 +89,7 @@ func (sa *SemAn) analyzeStatementSwitch(s Statement) {
 
 // something like that
 func (d Declaration) analyze(sa *SemAn) {
-    exists, _ := sa.checkTop(d.id.value)
+    exists, _ := sa.es.checkTop(d.id.value)
     if exists {
         sa.error(d.t, "Var %v already exists in this scope", d.id.value)
         return
@@ -99,9 +97,11 @@ func (d Declaration) analyze(sa *SemAn) {
     sa.es.add(d.id.value, d.ttype)
     sa.analyzeExpression(d.ttype, d.value)
 }
-
+// analyzeExpression verifies the expression and makes sure the resulting type
+// is of passed in type
+// so pass it the expression and pass it the return type it's supposed to be
 func (r Return) analyze(sa *SemAn) {
-    if p.analyzeExpression(sa.declaredFuncs[sa.currentFunc].returnType, r.value)
+    sa.analyzeExpression(sa.declaredFuncs[sa.currentFunc].returnType, r.value)
 }
 
 func (i If) analyze(sa *SemAn) {
@@ -112,7 +112,7 @@ func (i If) analyze(sa *SemAn) {
     if !i.isElse{
         sa.es.pushNewEnv()
         sa.analyzeBlock(i.falseBlock)
-        sa.popEnv()
+        sa.es.popEnv()
     }
 }
 
@@ -124,63 +124,55 @@ func (w While) analyze(sa *SemAn) {
 }
 
 func (r Reassignment) analyze(sa *SemAn) {
-    exists, ttype := sa.check(r.id.value)
+    exists, ttype := sa.es.check(r.id.value)
     if !exists {
         sa.error(r.t, "Var %v not declared", r.id.value)
         return
     }
-    sa.analyzeExpression(r.ttype, r.value)
+    sa.analyzeExpression(ttype, r.value)
 }
 
-// returns the return type, only needed if the function call is part of an expression
-// still return either way
-// seems right
-func (c Call) analyze(sa *SemAn) string {
-    declaredFunc := sa.declaredFuncs[sa.currentFunc]
-    if len(declaredFunc.params) != len(c.params) {
-        p.error(c.token, "Wrong number of arguments to function call %v", c.id.value)
-    } else {
-        for i, exp := range(c.params) {
-            p.analzyeExpression(declaredFunc.params[i], exp)
-        }
+func (c Call) analyze(sa *SemAn) {
+    declaredFunc, ok := sa.declaredFuncs[c.id.value]
+    if !ok { // in here i guess check if it's a built in
+        sa.error(c.t, "Function %v not defined", c.id.value)
+        return
     }
-    return declaredFunc.returnType
+    if len(declaredFunc.params) != len(c.params) {
+        sa.error(c.t, "Wrong number of arguments to function call %v", c.id.value)
+        return
+    }
+    for i, exp := range(c.params) {
+        sa.analyzeExpression(declaredFunc.params[i], exp)
+    }
 }
 
 /*********this goes back to sa reciever but switches it over to expression*********/
 // should validate the expression and make sure it is of the same type passed
 // something like that // TODO TODO TODO remove that return at the beginning of the func
 func (sa *SemAn) analyzeExpression(supposedType string, e Expression) {
-
-                    return // TODO BUG BUG BUG BUG BUG BUG BUG BUG BUG BUG BUG BUG
-
-    switch exp := e.(type){
-    default: // pseudo code, just to show the concept. Need to check types
-        ttype := exp.analyze() // these will return type, and
-    }    // check it down here
-    if ttype == "" {return} // it wasn't a valid expression. .analyze() will do the error
-    if ttype != supposedType {
-        p.error(e.t, "Expression %v not of correct type. Is %v, should be %v"
-                                        , e.String(), ttype, supposedType)
-    }
+                    return;         return
+                        return;                return
+            return;              return
+                            return;         return
+    // do it like this to do type checking
 }
 
 /*************reciever goes over to expression and takes sa as param*************/
 // thinking these return the type of the expression
-func (id Id) analyze(sa *SemAn) string {
-
+func (id Id) analyzeE(sa *SemAn) string {
+    return ""
 }
-
-func (c Call) analyze(sa *SemAn) string {
-
+// will basically be c.analyze(sa) but with a return type
+func (c Call) analyzeE(sa *SemAn) string {
+    return ""
 }
-
 // and so on
 
 /**************************reciever goes back to sa***************************/
 
 func (sa *SemAn) error(t token, msg string, args ...interface{}) {
-    fullMsg = fmt.Sprintf(msg, args...)
+    fullMsg := fmt.Sprintf(msg, args...)
     sa.errors = append(sa.errors, fmt.Sprintf("Line %v:", t.line) + fullMsg)
 }
 

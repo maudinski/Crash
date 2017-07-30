@@ -12,6 +12,7 @@ func main() {
     } else {
         print("nope")
     }
+    int i = 7
     while x < 30 {
         i = i + 1
         print(i)

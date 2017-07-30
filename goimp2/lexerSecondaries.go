@@ -13,7 +13,7 @@ type token struct {
 }
 
 func (t token) String() string {
-	return fmt.Sprintf("Type: %-15v Value: %-15v", t.ttype, t.value)
+	return fmt.Sprintf("Type: %-15v Value: %-15v Line: %-15v", t.ttype, t.value, t.line)
 }
 
 //Queue implimentation for the returned or peeked tokens. In relation to whatever the

@@ -21,8 +21,32 @@ func main() {
 	lexer.setKeywords("if", "func", "while" /*"for",*/, "return",
 		"struct", "global")
 	lexer.setTypes("int", "float", "string", "char", "byte")
+	/*for t := lexer.next(); t.value != "EOF"; t = lexer.next() {
+		fmt.Println(t)
+	}*/
 	parser := newParser(lexer)
 	ast := parser.parse()
 	analyzer := newSemAn(ast)
 	analyzer.analyze()
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

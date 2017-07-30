@@ -194,7 +194,7 @@ func (p *Parser) parseStatement(t token) Statement {
 }
 
 func (p *Parser) parseReassignment(t token) Reassignment {
-	r := Reassignment{id: Id{value: t.value}}
+	r := Reassignment{t: t, id: Id{value: t.value}}
 	if p.lx.next().value != "=" {
 		p.errorTrashLine(t, "Expecting '=' after %v for reassignmnet on line %v", t.value, t.line)
 		return r

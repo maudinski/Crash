@@ -5,13 +5,13 @@ import (
 )
 
 type EnvStack struct {
-    stack []Environment
+    stack []*Environment
     farthestPos int
 }
 
 func newEnvironmentStack() *EnvStack {
     es := new(EnvStack)
-    es.stack = make([]Environment, 0)
+    es.stack = make([]*Environment, 0)
     es.farthestPos = -1 // in accordance to array indexing
     return es
 }
@@ -37,7 +37,7 @@ func (es *EnvStack) add(id string, ttype string) {
 
 // checks all environments for existing var name
 // seems alright
-func (es *EnvStack) check(id string) (bool, ttype) {
+func (es *EnvStack) check(id string) (bool, string) {
     for i := es.farthestPos; i >= 0; i-- { // start from the top env
         ok, ttype := es.stack[i].check(id)
         if ok {
@@ -46,8 +46,8 @@ func (es *EnvStack) check(id string) (bool, ttype) {
     }
     return false, ""
 }
-
-func (es *EnvStack) checkTop(id string) (bool, ttype) {
+//                                      exists, type
+func (es *EnvStack) checkTop(id string) (bool, string) {
     return es.stack[es.farthestPos].check(id)
 }
 
@@ -57,8 +57,9 @@ type Environment struct {
 }
 
 func newEnvironment() *Environment {
-    env := new(Environement)
+    env := new(Environment)
     env.vars = make(map[string]string, 0) // i think
+    return env
 }
 
 func (env *Environment) add(id string, ttype string) {

@@ -4,18 +4,20 @@ import (
 	"fmt"
 	"strconv"
 )
-
+// fucking AA if it's in the interface, then you don't have to do a type assertion :D
 type Node interface {
 	String() string
 }
 
 type Expression interface {
 	Node
+	//analyzeE(*SemAn) // used and defined in semanticAnalyzer.go
 	isExpression() // dummy functions to force compiler to differentiate between E and S
 }
 
 type Statement interface {
 	Node
+	analyze(*SemAn) // used and defined in semanticAnalyzer.go
 	isStatement() // dummy functions to force compiler to differentiate between E and S
 }
 
@@ -29,13 +31,10 @@ func newBlock() Block {
 func (b Block) String() string {
 	str := "Block: "
 	str += "Statment amt = " + strconv.Itoa(len(b)) + "\n"
-	for _, state := range b {
-		switch s := state.(type) {
-		default:
-			str += "\t" + s.String() + "\n"
-		} // a tour of go i suggesting that s will be the approriate variable...
-	} // in which case this should work in all cases. Jesus I fucking hope
-	return str // it does :)
+	for _, s := range b {
+		str += "\t" + s.String() + "\n"
+	}
+	return str
 }
 
 /*******/
@@ -175,10 +174,7 @@ func (c Call) isExpression() {} // Semantic analyzer will have to check if a fun
 func (c Call) String() string {
 	str := "Function call, name " + c.id.String() + ", params: "
 	for _, e := range c.params {
-		switch exp := e.(type) {
-		default:
-			str += exp.String()
-		}
+		str += e.String()
 	}
 	return str
 }
