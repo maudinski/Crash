@@ -9,10 +9,10 @@ type Node interface {
 	String() string
 }
 
-type Expression interface {
+type ExpressionPart interface {
 	Node
 	//analyzeE(*SemAn) // used and defined in semanticAnalyzer.go
-	isExpression() // dummy functions to force compiler to differentiate between E and S
+	isExpressionPart() // dummy functions to force compiler to differentiate between E and S
 }
 
 type Statement interface {
@@ -68,49 +68,6 @@ func (d Declaration) String() string {
 	//idk if this will work since Expression is an interface
 }
 
-/*****
-type InfixExpression struct {
-	t token
-	left Expression
-	operator string
-	right Expression
-}
-func (ie InfixExpression) isExpression() {}
-func (ie InfixExpression) String() string {
-	return fmt.Sprintf("InfixExpressions:(%v %v %v)", ie.left, ie.operator, ie.right)
-	//idk if this will work since expression is an interface
-}
-/*****
-type IntExpression struct {
-	t token
-	value int
-}
-func (ie IntExpression) isExpression() {}
-func (ie IntExpression) String() string {
-	return fmt.Sprintf("%v", ie.value)
-}
-/**this would make sense right***
-type FloatExpression struct{
-	t token
-	value float64
-}
-func (fe FloatExpression) isExpression() {}
-func (fe FloatExpression) String() string{
-	return string(fe.value)
-}
-/******this should make sense ****
-type StringExpression struct {
-	t token
-	value string
-}
-func (se StringExpressiong) isExpression() {}
-func (se StringExpression) String() string{
-	return se.value
-}
-
-
-/********/
-//idk about this yet
 type Function struct {
 	t          token
 	params     []Parameter
@@ -160,24 +117,6 @@ func (r Reassignment) isStatement()     {}
 func (r Reassignment) String() string { // not sure if this will work since expression
 	return fmt.Sprintf("Reassignment: Id %v, value %v", r.id, r.value) // is interface
 }
- 
-/**************/
-type Call struct {
-	t      token
-	id     Id
-	params []Expression
-}
-
-func (c Call) isStatement()  {}
-func (c Call) isExpression() {} // Semantic analyzer will have to check if a function
-//call used in an expression returns a value (And appropriate one but thats not the point)
-func (c Call) String() string {
-	str := "Function call, name " + c.id.String() + ", params: "
-	for _, e := range c.params {
-		str += e.String()
-	}
-	return str
-}
 
 /********************/
 type FakeExpression struct {
@@ -185,7 +124,7 @@ type FakeExpression struct {
 	value string
 }
 
-func (fe FakeExpression) isExpression() {}
+func (fe FakeExpression) isExpressionPart() {}
 func (fe FakeExpression) String() string {
 	return fe.value
 }
@@ -211,4 +150,87 @@ type Return struct {
 func (r Return) isStatement() {}
 func (r Return) String() string {
 	return "Return " + r.value.String()
+}
+
+/**************/
+type Call struct {
+	t      token
+	id     Id
+	params []Expression
+	 // only if used in expression, this value is set in parser in parseExpression.
+	typeShouldBe string
+}
+
+func (c Call) isStatement()  {}
+func (c Call) isExpressionPart() {} // Semantic analyzer will have to check if a function
+//call used in an expression returns a value (And appropriate one but thats not the point)
+func (c Call) String() string {
+	str := "Function call, name " + c.id.String() + ", params: "
+	for _, e := range c.params {
+		str += e.String()
+	}
+	return str
+}
+
+type Postfix struct {
+	t token
+	exp []ExpressionPart
+	overallType string
+}
+func (p Postfix) isExpressionPart() {}
+func (p Postfix) String() string {
+	str := ""
+	for _, exp := range(p.exp) {
+		str += exp.String()
+	}
+	return "PostfixExpression: " + str
+}
+
+type Operator struct {
+	t token
+	value string
+}
+func (o Operator) isExpressionPart() {}
+func (o Operator) String() string {
+	return o.value
+}
+/************************************************************************************8**
+type InfixExpression struct {
+	t token
+	left Expression
+	op string
+	right Expression
+}
+func (ie InfixExpression) isExpression() {}
+func (ie InfixExpression) String() string {
+	return fmt.Sprintf("InfixExpressions:(%v %v %v)",
+			ie.left.String(), ie.operator.String(), ie.right.String())
+	//idk if this will work since expression is an interface
+}
+/*****/
+type Int struct {
+	t token
+	value int
+}
+func (ie IntExpression) isExpressionPart() {}
+func (ie IntExpression) String() string {
+	return fmt.Sprintf("%v", ie.value)
+}
+/**this would make sense right***/
+type Float struct{
+	t token
+	value float64
+}
+func (fe FloatExpression) isExpressionPart() {}
+func (fe FloatExpression) String() string{
+	return strconv.FormatFloat(fe.value, 'E', -1, 64) //idfk
+}
+/******this should make sense ****/
+type String struct {
+	t token
+	value string
+}
+func (se StringExpressiong) isExpressionPart() {}
+func (se StringExpression) String() string{
+	return se.value
 }

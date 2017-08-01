@@ -1,6 +1,6 @@
 // if lexer uses it, but it doesn't have lexer as a reciever, it's in lexerSecondaries.go
 package main
-
+// TODO redo error management to a seperate error method, and format: line 12: errmsg
 import (
 	"fmt"
 	"os"
@@ -109,7 +109,7 @@ func (lx *Lexer) getStrToken() token {
 	}
 	return token{"STRING_LITERAL", str, lx.lineNum}
 }
- 
+
 // might have to have specified operator types, like BOOL_OPERATOR and MATH_OPERATOR
 func (lx *Lexer) getOpToken(op string) token {
 	c := lx.data.peek()

@@ -1,6 +1,8 @@
 // this is shittily done. get it working then redo
 package main
-
+// TODO error message to format line12: errMsg
+// TODO got and comment what token each function is taking as a parameter and some
+// example of what they are parsing, I'll thank myself later I'm sure
 import (
 	"fmt"
 	"os"
@@ -10,6 +12,10 @@ import (
 type Parser struct {
 	lx     *Lexer
 	errors []string
+	// stands for expression object functions. A map of function pointers that return
+	// an approriate Expression interface object based on the type. Used by parseExpression
+	// in shitExpressionsParser.go
+	expObjFuncs map[string]func(token)Expression
 }
 
 func newParser(lx *Lexer) *Parser {
@@ -17,6 +23,11 @@ func newParser(lx *Lexer) *Parser {
 	p.lx = lx
 	p.errors = make([]string, 0)
 	return p
+}
+
+func (p *Parser) setFunctionMaps() {
+	fmt.Println("setFunctionMaps idk")
+	os.Exit(0)
 }
 
 // something like this
@@ -87,7 +98,7 @@ func (p *Parser) parseFunction(t token) (string, *Function) {
 // christ this function is lengthy. But I think it works
 // ma fucking cheted. Works tho
 // TODO rewrite
-func (p *Parser) parseFunctionHeader() (string, []Parameter, string) { // not returning just a string
+func (p *Parser) parseFunctionHeader() (string, []Parameter, string) {
 	t := p.lx.next()
 	params := make([]Parameter, 0)
 	if t.ttype != "ID" {
@@ -104,13 +115,15 @@ func (p *Parser) parseFunctionHeader() (string, []Parameter, string) { // not re
 	if t = p.lx.next(); t.value != ")" {
 		for ; true; t = p.lx.next() { // exiting handled in loop. I prefer while loops
 			if t.ttype != "TYPE" {
-				p.errorTrashLine(t, "Expecting var declaration in function header, line %v", t.line)
+				p.errorTrashLine(t,
+						"Expecting var declaration in function header, line %v", t.line)
 				p.lx.putBack(token{"{", "{", t.line})
 				return funcName, params, ""
 			}
 			t2 := p.lx.next()
 			if t2.ttype != "ID" {
-				p.errorTrashLine(t2, "Expecting variable identifier after %v on line %v", t.value, t.line)
+				p.errorTrashLine(t2, "Expecting variable identifier after %v on line %v",
+					 			t.value, t.line)
 				p.lx.putBack(token{"{", "{", t.line})
 				return funcName, params, ""
 			}
@@ -122,7 +135,8 @@ func (p *Parser) parseFunctionHeader() (string, []Parameter, string) { // not re
 			if t.value == "," {
 				continue
 			}
-			p.errorTrashLine(t, "Expexting ')' or ',' after %v on line %v", t2.value, t2.line)
+			p.errorTrashLine(t, "Expexting ')' or ',' after %v on line %v",
+			 				t2.value, t2.line)
 			p.lx.putBack(token{"{", "{", t.line})
 			return funcName, params, ""
 		}
@@ -192,11 +206,12 @@ func (p *Parser) parseStatement(t token) Statement {
 	} // parser will exit if any errors exist
 
 }
- 
+
 func (p *Parser) parseReassignment(t token) Reassignment {
 	r := Reassignment{t: t, id: Id{value: t.value}}
 	if p.lx.next().value != "=" {
-		p.errorTrashLine(t, "Expecting '=' after %v for reassignmnet on line %v", t.value, t.line)
+		p.errorTrashLine(t, "Expecting '=' after %v for reassignmnet on line %v",
+							t.value, t.line)
 		return r
 	}
 	r.value = p.parseExpression()
@@ -229,7 +244,8 @@ func (p *Parser) parseFunctionCall(t token) Call {
 		}
 	}
 	if err {
-		p.errorTrashLine(t, "Expecting ')' or ',' in function call, got '%v'. Line %v", t.value, t.line)
+		p.errorTrashLine(t, "Expecting ')' or ',' in function call, got '%v'. Line %v",
+		 				t.value, t.line)
 	}
 	return c
 }

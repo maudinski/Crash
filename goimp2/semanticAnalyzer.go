@@ -7,7 +7,7 @@ import (
     //"strconv" // atom doesn't recognize that comment lol
     "os"
 )
- 
+
 type DeclaredFunc struct {
     name string // redundent cause it's being stored in a mao by it's name but ohwell
     params []string // slice of the types
@@ -123,6 +123,7 @@ func (w While) analyze(sa *SemAn) {
     sa.es.popEnv()
 }
 
+// TODO should not allow strings to be reassigned
 func (r Reassignment) analyze(sa *SemAn) {
     exists, ttype := sa.es.check(r.id.value)
     if !exists {
@@ -155,6 +156,9 @@ func (sa *SemAn) analyzeExpression(supposedType string, e Expression) {
                         return;                return
             return;              return
                             return;         return
+    // TODO putting this here so i remeber. Go make reassignment.analyze() not allow
+    // strings to be reassigned, as it will complicate assembly code. So i guess that
+    // means theyre 'immutable'
     // do it like this to do type checking
 }
 

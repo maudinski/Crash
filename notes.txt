@@ -6,18 +6,13 @@ also, haven't tested the lexer with tossing bugs in it
 kind of want to have some sort of universal type at the top of all types called VOID or NULL
 or something, where you can set any type equal to VOID or NULL or NIL (prolly nil)
 might not be a universal type, but a universal value that all types can be set to, not just
-pointers. Only problem is that would lead to some weird errors for user
-
-need to be counting newline tokens. If I tie each token (in the lexer) to the line
-it's on, then build these ast's with said tokens, it would be easy to know which
-line i'm on always, even during sematic analysis. That way I only have to bother
-with newlines in the lexer. Might have to change the way I do some shit but could
-be worse
+pointers. Only problem is that would lead to some weird errors for user. Prolly not
+doable, it has to be representable in binary. NULL only works for pointers because a
+pointer with all bits in it's value (or something like that) set to 0 is not a valid
+memory address so they use that as an advantage, but all bits 0 is valid for chars,
+ints, floats, etc
 
 i don't need to be using make, i cant just be saying somestruct.somelice = []sometype
-
-function return types have to be after the prototype header shit. Because of the way I'm
-doing the lexer
 
 I'm probably writing pretty inefficient code by never returning pointers. Using
 new() would allocate memory but return an 8 byte pointer as opposed (apposed?) to
@@ -28,3 +23,31 @@ just make all expressions implement the statement interface too, so they can be 
 on their own. Prefer not to though
 
 a lot of this hasnt been error tested
+
+For structs, lex, parse and semantic analyze them first (maybe force them to be in a
+seperate file, thought that's really dirty). Then add those to the lexer as types, that
+way it will be sort of automatic. Also, a struct initialzer will be
+StructName s = StructNameInit(5, "hello", 4) (fields in order). That is actually a
+function that the compiler will automatically generate depending on the struct that returns
+said type. Not sure how to do the parsing on that though, will figure it out
+
+some builtins needed:
+print(4, x + 9)
+string s = scan("Enter something"), basically a call to print then scans and returns
+alloc(int) takes a type, and only maybe
+free(x) takes the allocated variable, and only maybe
+type casters: int() float() string(), string to int might only be possible with multiple
+            return types
+append()
+
+
+
+
+
+
+
+
+
+
+
+
