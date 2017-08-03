@@ -4,7 +4,7 @@ package main
 // and variable assignments/reassignments. Final string of error checking
 import (
     "fmt"
-    //"strconv" // atom doesn't recognize that comment lol
+    // //"strconv" // atom doesn't recognize that comment lol
     "os"
 )
 
@@ -36,6 +36,7 @@ func newSemAn(ast *Ast) *SemAn {
 }
 
 // this doesn't actually modify the ast at all
+// phase sounds a lot cooler than it is
 func (sa *SemAn) analyze() {
     sa.phase1()
     sa.checkErrors() // will only be global variable expression errors

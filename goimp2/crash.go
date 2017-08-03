@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 )
- 
+
 func main() {
 	if len(os.Args) != 2 {
 		fmt.Println("Enter one file")
@@ -20,11 +20,12 @@ func main() {
 	lexer := newLexer(data)
 	lexer.setKeywords("if", "func", "while" /*"for",*/, "return",
 		"struct", "global")
-	lexer.setTypes("int", "float", "string", "char", "byte")
+	lexer.setTypes("int", "float", "string", "bool")
 	/*for t := lexer.next(); t.value != "EOF"; t = lexer.next() {
 		fmt.Println(t)
 	}*/
 	parser := newParser(lexer)
+	parser.setPrattMaps() // hard coded in shitExpressionParser.go
 	ast := parser.parse()
 	analyzer := newSemAn(ast)
 	analyzer.analyze()

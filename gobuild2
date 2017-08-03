@@ -1,1 +1,1 @@
-go build goimp2/crash.go goimp2/lexer.go goimp2/lexerSecondaries.go goimp2/data.go goimp2/shitParser.go goimp2/nodes.go goimp2/ast.go goimp2/semanticAnalyzer.go goimp2/environmentStack.go 
+go build goimp2/crash.go goimp2/lexer.go goimp2/lexerSecondaries.go goimp2/data.go goimp2/shitParser.go goimp2/nodes.go goimp2/ast.go goimp2/semanticAnalyzer.go goimp2/environmentStack.go goimp2/shitExpressionParser.go

@@ -1,5 +1,6 @@
 just build it with everything in mind, fuck this "add features as you go" shit, it
 just leads to massive spaghetti code
+still ended up being that way. Whole things machete'ed
 
 also, haven't tested the lexer with tossing bugs in it
 
@@ -39,12 +40,15 @@ free(x) takes the allocated variable, and only maybe
 type casters: int() float() string(), string to int might only be possible with multiple
             return types
 append()
+// this is some later shit, no joke this will be pretty fucking hard
+remove(file)
+file = open("filename")
+string text = read(file)
+write(file, text + "\n")
+writeLine(file, text)
 
-
-
-
-
-
+the fact that function return types are after the id and paramters is tied into the lexer
+and used for it to work. don't fuck with it
 
 
 

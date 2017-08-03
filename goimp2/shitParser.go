@@ -1,4 +1,4 @@
-// this is shittily done. get it working then redo
+// this is hacked get it working then redo
 package main
 // TODO error message to format line12: errMsg
 // TODO got and comment what token each function is taking as a parameter and some
@@ -12,10 +12,22 @@ import (
 type Parser struct {
 	lx     *Lexer
 	errors []string
-	// stands for expression object functions. A map of function pointers that return
-	// an approriate Expression interface object based on the type. Used by parseExpression
-	// in shitExpressionsParser.go
-	expObjFuncs map[string]func(token)Expression
+	// nud stands for null denotion, which in contrast to the beneath one, mean "these
+	// are the functions im looking for when i have no unclaimed expressions to tie this
+	// to". Refers to single expressions (like literals and ID's, function calls, etc)
+	// and also infix operators (like ! and negative sign). Those are the keys
+	nudFunctions map[string]func(*Parser, token)Expression
+	// led stands for left denotion, whcih i guess means that "these are the functions
+	// im looking for when i have some left expression that is unclaimed". These usually
+	// refer to operators. Those are the key
+	// https://people.csail.mit.edu/jaffer/slib/Nud-and-Led-Definition.html
+	// link to some article
+	ledFunctions map[string]func(*Parser, token, Expression)Expression
+	// stands for binding power, which is literally just presedence power, but pratt
+	// describes it as the power an operator has of binding an expression to it. ie:
+	// 2 + 3 * 5, the 3 gets bound to the *, not the +, cause of presedence. Turns to
+	// 2 + (3 * 5)
+	bp map[string]int
 }
 
 func newParser(lx *Lexer) *Parser {
@@ -23,11 +35,6 @@ func newParser(lx *Lexer) *Parser {
 	p.lx = lx
 	p.errors = make([]string, 0)
 	return p
-}
-
-func (p *Parser) setFunctionMaps() {
-	fmt.Println("setFunctionMaps idk")
-	os.Exit(0)
 }
 
 // something like this
@@ -214,7 +221,7 @@ func (p *Parser) parseReassignment(t token) Reassignment {
 							t.value, t.line)
 		return r
 	}
-	r.value = p.parseExpression()
+	r.value = p.parseExpression(0)
 	return r
 }
 
@@ -222,7 +229,7 @@ func (p *Parser) parseReassignment(t token) Reassignment {
 func (p *Parser) parseFunctionCall(t token) Call {
 	c := Call{t: t, id: Id{t, t.value}}
 	c.params = make([]Expression, 0) // or however you do this
-	//NOTE it's not possible for the next token to not be a (, because the lexer will
+	//it's not possible for the next token to not be a (, because the lexer will
 	//only provide a CALL type if it sees a (. So just consume it
 	p.lx.next()
 	t = p.lx.next()
@@ -232,7 +239,7 @@ func (p *Parser) parseFunctionCall(t token) Call {
 	p.lx.putBack(t)
 	err := false
 	for ; true; t = p.lx.next() { // break logic is handled in loop
-		c.params = append(c.params, p.parseExpression())
+		c.params = append(c.params, p.parseExpression(0))
 		t = p.lx.next()
 		if t.value == ")" {
 			break
@@ -262,32 +269,8 @@ func (p *Parser) parseDeclaration(t token) Declaration {
 		p.errorTrashLine(t, "Expecting '=' after %v on line %v", d.id, t.line)
 		return d
 	}
-	d.value = p.parseExpression()
+	d.value = p.parseExpression(0)
 	return d
-}
-
-// I'm probably going to read this guys pratt parser shit, then just end up doing
-// postfix expressions anyways, and do the lexical analysis part of expressions during
-// this process. Should even be easier to generate code at runtime (maybe not actually)
-// actually cause of function calls, seman will be harder during this. Maybe suck up a nut
-// NOTE this will need to validate that it's starting an expression, nothing has looked
-// at these tokens so far
-// should also leave EVERYTHING after words intact, so if it reads in a comma, puts it
-// the fuck back
-// when written, could probably check that the next token is something valid? say, has
-// to be a a comma, ), newline, or }
-func (p *Parser) parseExpression() Expression {
-	//TODO, this just sets up a fake expression. For debugging
-	exp := ""
-	var t token
-	for t = p.lx.next(); true; t = p.lx.next() { // logic handled in loop. dummy code anyways
-		if t.value == ")" || t.value == "," || t.value == "\\n" || t.value == "{" {
-			break
-		}
-		exp += t.value
-	}
-	p.lx.putBack(t)
-	return FakeExpression{value: exp}
 }
 
 /*************KEYWORD PARSING****************/
@@ -305,9 +288,8 @@ func (p *Parser) parseKeyword(t token) Statement {
 	} // parser will exit if any errors exist
 }
 
-// TODO go through and add tokens to everything
 func (p *Parser) parseIf(t token) If {
-	i := If{t: t, exp: p.parseExpression(), trueBlock: p.parseBlock()}
+	i := If{t: t, exp: p.parseExpression(0), trueBlock: p.parseBlock()}
 	if t = p.lx.next(); t.value == "else" {
 		i.isElse = true
 		i.falseBlock = p.parseBlock()
@@ -318,12 +300,12 @@ func (p *Parser) parseIf(t token) If {
 }
 
 func (p *Parser) parseWhile(t token) While {
-	return While{t, p.parseExpression(), p.parseBlock()}
+	return While{t, p.parseExpression(0), p.parseBlock()}
 }
 
 //will only work for single return types
 func (p *Parser) parseReturn(t token) Return {
-	return Return{t, p.parseExpression()}
+	return Return{t, p.parseExpression(0)}
 }
 
 func (p *Parser) errorTrashLine(t token, format string, args ...interface{}) {

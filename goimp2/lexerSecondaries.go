@@ -45,7 +45,7 @@ func (q *Queue) pull() token {
 	q.amt--
 	return t
 }
- 
+
 /***/
 func (q *Queue) isEmpty() bool {
 	return q.amt == 0
@@ -57,7 +57,7 @@ func isWrapper(s string) bool {
 }
 
 func isOperator(s string) bool {
-	ok, _ := regexp.MatchString("[=\\-\\+/%><!]", s)
+	ok, _ := regexp.MatchString("[=\\-\\+/%>*<!]", s)
 	return ok
 }
 
@@ -70,7 +70,9 @@ func isDigit(c string) bool {
 // something valid that a number could be attached to (so an operator, a blank space, etc)
 func canNumEndHere(c string) bool {
 	if ok, _ := regexp.MatchString("[ ,;\\])\n]", c); !ok {
-		return isOperator(c)
+		if c != "EOF" {
+			return isOperator(c)
+		}
 	}
 	return true
 }

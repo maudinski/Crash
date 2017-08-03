@@ -1,1 +1,0 @@
-go build code/crash.go code/token.go code/data.go code/lexer.go code/nodes.go code/parser.go code/ast.go

@@ -115,7 +115,7 @@ func (lx *Lexer) getOpToken(op string) token {
 	c := lx.data.peek()
 	if c == "EOF" { // more of a parsing error than lexing, but ehh, we're here
 		lx.errors = append(lx.errors, "Nothing after operator, line "+toString(lx.lineNum))
-	} else if isOperator(c) {
+	} else if c == "=" {
 		lx.data.next()
 		op += c
 	}
@@ -163,6 +163,8 @@ func (lx *Lexer) getAmbiguousToken(str string) token {
 		return token{"TYPE", str, lx.lineNum}
 	} else if lx.isKeyword(str) {
 		return token{"KEYWORD", str, lx.lineNum}
+	} else if str == "true" || str == "false" {
+		return token{"BOOL_LITERAL", str, lx.lineNum}
 	} else if lx.data.peek() == "(" {
 		if lx.lastToken.value == "func" { // this means function return type have to be
 			return token{"ID", str, lx.lineNum} // AFTER the declaration

@@ -13,7 +13,7 @@ func main() {
         print("nope")
     }
     int i = 7
-    while x < 30 {
+    while x != 30 {
         i = i + 1
         print(i)
         while true {
@@ -29,6 +29,9 @@ func main() {
 
 func someFunc(int x, string y) int {
      print(x)
-     print()
+     print(6)
      return x
+}
+
+func print(string s) {
 }
