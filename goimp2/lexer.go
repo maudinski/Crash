@@ -105,7 +105,7 @@ func (lx *Lexer) getStrToken() token {
 		str += c
 	}
 	if !closed {
-		lx.errors = append(lx.errors, "String never closed, line "+toString(lx.lineNum-1))
+		lx.addErrors("String never closed")
 	}
 	return token{"STRING_LITERAL", str, lx.lineNum}
 }
@@ -114,10 +114,17 @@ func (lx *Lexer) getStrToken() token {
 func (lx *Lexer) getOpToken(op string) token {
 	c := lx.data.peek()
 	if c == "EOF" { // more of a parsing error than lexing, but ehh, we're here
-		lx.errors = append(lx.errors, "Nothing after operator, line "+toString(lx.lineNum))
+		lx.addErrors("Nothing after operator")
 	} else if c == "=" {
 		lx.data.next()
 		op += c
+	} else if isAndOr(op) {
+		if c == op {
+			lx.data.next()
+			return token{"OPERATOR", op+op, lx.lineNum}
+		} else  {
+			lx.addErrors("Needs to be "+op+op)
+		}
 	}
 	return token{"OPERATOR", op, lx.lineNum}
 }
@@ -139,7 +146,7 @@ func (lx *Lexer) getNumToken(snum string) token {
 		snum += c
 	}
 	if !canNumEndHere(c) {
-		lx.errors = append(lx.errors, "Invalid number on line "+toString(lx.lineNum))
+		lx.addErrors("Invalid number")
 	}
 	lx.data.goBack() // since one extra byte was grabbed
 
@@ -194,3 +201,8 @@ func (lx *Lexer) isKeyword(s string) bool {
 	}
 	return false
 }
+
+func (lx *Lexer) addErrors(msg string, args ...interface{}) {
+	lx.errors = append(lx.errors, fmt.Sprintf("Line "+toString(lx.lineNum)+": "+msg, args...))
+}
+

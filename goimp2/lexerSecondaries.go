@@ -57,7 +57,12 @@ func isWrapper(s string) bool {
 }
 
 func isOperator(s string) bool {
-	ok, _ := regexp.MatchString("[=\\-\\+/%>*<!]", s)
+	ok, _ := regexp.MatchString("[=\\-\\+/%>*\\^<!&|]", s)
+	return ok
+}
+
+func isAndOr(s string) bool {
+	ok, _ := regexp.MatchString("[&|]", s)
 	return ok
 }
 

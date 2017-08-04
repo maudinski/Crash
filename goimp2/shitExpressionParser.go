@@ -1,20 +1,9 @@
 package main
-// TODO get a better grip on exactly how pratt parsing does it. Such elegance
-// actual TODO
-// NOTE this will need to validate that it's starting an expression, nothing has looked
-// at these tokens so far
-// should also leave EVERYTHING after words intact, so if it reads in a comma, puts it
-// the fuck back
-// when written, could probably check that the next token is something valid? say, has
-// to be a a comma, ), newline, or }
-//
-// TODO walk through and see what happens with different cases of wrong input for debugging
-//
-// TODO figure out trash expression
+// TODO trashExpression really fucks up the rest of the errors
 import (
     "strconv"
-    "os"
     "fmt"
+    "os"
 )
 
 // http://eli.thegreenplace.net/2010/01/02/top-down-operator-precedence-parsing
@@ -24,14 +13,16 @@ func (p *Parser) parseExpression(rbp int) Expression {
     t := p.lx.next()
     f := p.nudFunctions[t.ttype]
     if f == nil {
-        p.errorTrashExpression(t, "Invalid expression")
+        p.errorTrashExpression(t, "Invalid1 expression")
+        return Id{}
     } // somehow need to account for EOF's and shit, logic through where to error check
     exp := f(p, t)
     for rbp < p.getBp(p.lx.peek().value) {
         t = p.lx.next()
         f2 := p.ledFunctions[t.value]
         if f2 == nil {
-            p.errorTrashExpression(t, "Invalid Expression")
+            p.errorTrashExpression(t, "Invalid 2Expression")
+            return Id{}
         }
         exp = f2(p, t, exp) // t being passed solely for line numbers in lexical analysis
     }
@@ -48,7 +39,7 @@ func (p *Parser) setPrattMaps() {
         "%": modulo}
     // changing these could fuck ip infixOp function, check
     p.bp = map[string]int{")": 0, "==": 10, ">": 10, "<": 10, ">=": 10, "<=": 10,
-        "+": 20, "-": 20, "*": 30, "/": 30, "%": 30, "^": 40, "!=": 10}
+        "+": 20, "-": 20, "*": 30, "/": 30, "%": 30, "^": 40, "!=": 10, "&&": 5, "||": 5}
 }
 
 /*********nud functions************/
@@ -77,7 +68,10 @@ func id(p *Parser, t token) Expression {
 
 // probably
 func call(p *Parser, t token) Expression {
-    return p.parseFunctionCall(t)
+    p.parsingFuncCallExpression++
+    exp := p.parseFunctionCall(t)
+    p.parsingFuncCallExpression--
+    return exp
 }
 
 // this basically just starts parseExpression over, right after the left paren. Right
@@ -161,6 +155,14 @@ func notEqual(p *Parser, t token, e Expression) Expression {
     return NotEqual{t: t, left: e, right: p.parseExpression(p.getBp(t.value))}
 }
 
+func and(p *Parser, t token, e Expression) Expression {
+    return And{t: t, left: e, right: p.parseExpression(p.getBp(t.value))}
+}
+
+func or(p *Parser, t token, e Expression) Expression {
+    return Or{t: t, left: e, right: p.parseExpression(p.getBp(t.value))}
+}
+
 func (p *Parser) getBp(op string) int {
     bp, ok := p.bp[op]
     if !ok {
@@ -169,8 +171,35 @@ func (p *Parser) getBp(op string) int {
     return bp
 }
 
+// somethings fucked up with the way this works, so just gonna exit
+// at the end of this and print the error. Bad but will atleast not give walk ass errors
+// afterwords
+// I think the fuck up has to do with the putBacks() and maybe with the way the lexers
+// queue works, not sure though
 func (p *Parser) errorTrashExpression(t token, msg string, args ...interface{}) {
-    fullMsg := "eXITING FOR NOW-------------------------------------------------------------------------------------------------------------------------- Line "+ toString(t.line) +": "+ msg
-    fmt.Printf(fullMsg, args...)
-    os.Exit(0)
+    fullMsg := "Line " + toString(t.line) + ": " + msg
+    for ; isExpressionPart(t); t = p.lx.next() {}
+    if t.value != "," && p.parsingFuncCallExpression != 0 { // so parseFunctionCall doesnt
+        p.lx.putBack(token{")", ")", t.line}) // fuck up
+        fullMsg += " in function call"
+    }
+    p.lx.putBack(t)
+    fmt.Printf(fullMsg + "\n", args...) // not supposed to be here
+    os.Exit(0) // not supposed to be here
+    //p.errors = append(p.errors, fmt.Sprintf(fullMsg, args...))
 }
+
+func isExpressionPart(t token) bool {
+    switch (t.ttype) {
+    case "INT_LITERAL": fallthrough
+    case "FLOAT_LITERAL": fallthrough
+    case "BOOL_LITERAL": fallthrough
+    case "STRING_LITERAL": fallthrough
+    case ")": fallthrough // gives some wrong errors if p.parserExp was called in parCall
+    case "(": fallthrough
+    case "OPERATOR": return true
+    default: return false
+    }
+}
+
+

@@ -1,10 +1,11 @@
 global int fuck = 7
 global string doublefucn = "VFdvfd"
 
+global bool ghg = 8 + 9 / 6 > 6 == true 
+
 func main() {
     # this is fucking juvenile
     string s = "what's up"
-    print(s)
     float p = 5.7
     int x = 4
     if x > 9 {
@@ -13,11 +14,11 @@ func main() {
         print("nope")
     }
     int i = 7
-    while x != 30 {
+    while x == 30 {
         i = i + 1
         print(i)
-        while true {
-            print("someothershit")
+        if true {
+            print(7)
         }
     }
     fuck = 8
@@ -27,11 +28,12 @@ func main() {
     print(z - 9)
 }
 
+func print(int i) int {
+    return i
+}
+
 func someFunc(int x, string y) int {
      print(x)
      print(6)
      return x
-}
-
-func print(string s) {
 }

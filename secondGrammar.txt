@@ -1,1 +1,5 @@
-global bool b = -(8 + 8) * 3 != 7 / (4 - 3 % 8)
+global bool b = add(5, 8 + =) + 9 -- 
+func add( x, int y) int {
+    int x = 5 / 7 - 9 + 2 - add(4, 3)
+    return x + y
+}

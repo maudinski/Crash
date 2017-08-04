@@ -12,8 +12,9 @@ type Node interface {
 
 type Expression interface {
 	Node
-	//analyzeE(*SemAn) // used and defined in semanticAnalyzer.go
+	analyzeE(*SemAn) string // used and defined in semanticAnalyzer.go
 	isExpression() // dummy functions to force compiler to differentiate between E and S
+	getT() token // is expression kinda pointless now but ohwell. Nice and readable
 }
 
 type Statement interface {
@@ -95,17 +96,6 @@ func (p Parameter) String() string {
 	return fmt.Sprintf("type: %v, Id: %v ", p.ttype, p.id)
 }
 
-/****************/
-type Id struct {
-	t     token
-	value string
-}
-
-func (id Id) isExpression() {}
-func (id Id) String() string {
-	return id.value
-}
-
 /*************/
 type Reassignment struct {
 	t     token
@@ -165,14 +155,26 @@ func (c Call) isStatement()  {}
 func (c Call) isExpression() {} // Semantic analyzer will have to check if a function
 //call used in an expression returns a value (And appropriate one but thats not the point)
 func (c Call) String() string {
-	str := "Function call, name " + c.id.String() + ", params: "
-	for _, e := range c.params {
-		str += e.String()
+	str := "Function call, name " + c.id.String() + ", params:"
+	for i, e := range c.params {
+		str += " |"+toString(i+1)+":"+e.String()
 	}
 	return str
 }
-
+func (a Call) getT() token { return a.t } // a for mass copy and paste
 /**************************this is all for expressions******************************88**/
+type Id struct {
+	t     token
+	value string
+}
+
+func (id Id) isExpression() {}
+func (id Id) String() string {
+	return id.value
+}
+func (a Id) getT() token { return a.t } // a for mass copy and paste
+
+/*************/
 type Int struct {
 	t     token
 	value int
@@ -182,6 +184,7 @@ func (i Int) isExpression() {}
 func (i Int) String() string {
 	return fmt.Sprintf("%v", i.value)
 }
+func (a Int) getT() token { return a.t } // a for mass copy and paste
 
 /**this would make sense right***/
 type Float struct {
@@ -193,6 +196,7 @@ func (f Float) isExpression() {}
 func (f Float) String() string {
 	return strconv.FormatFloat(f.value, 'E', -1, 64) //idfk
 }
+func (a Float) getT() token { return a.t } // a for mass copy and paste
 
 /******this should make sense ****/
 type String struct {
@@ -204,6 +208,7 @@ func (s String) isExpression() {}
 func (s String) String() string {
 	return s.value
 }
+func (a String) getT() token { return a.t } // a for mass copy and paste
 
 /********/
 type Bool struct {
@@ -214,6 +219,8 @@ func (b Bool) isExpression() {}
 func (b Bool) String() string {
 	return strconv.FormatBool(b.value)
 }
+func (a Bool) getT() token { return a.t } // a for mass copy and paste
+
 /*******/
 type Not struct {
 	t token
@@ -223,6 +230,8 @@ func (n Not) isExpression() {}
 func (n Not) String() string {
 	return fmt.Sprintf("!(%v)", n.exp.String())
 }
+func (a Not) getT() token { return a.t } // a for mass copy and paste
+
 /*******/
 type Negative struct {
 	t token
@@ -232,6 +241,8 @@ func (n Negative) isExpression() {}
 func (n Negative) String() string {
 	return fmt.Sprintf("-(%v)", n.exp.String())
 }
+func (a Negative) getT() token { return a.t } // a for mass copy and paste
+
 /******************ooperation srcuts******************/
 // a fuckton of structs but makes the code part easier with interfaces and implemented
 // methods for compilation, checking validity, etc
@@ -246,6 +257,7 @@ func (m Multiply) isExpression() {}
 func (m Multiply) String() string {
 	return fmt.Sprintf("(%v * %v)", m.left.String(), m.right.String())
 }
+func (a Multiply) getT() token { return a.t } // a for mass copy and paste
 
 /**********/
 type Add struct {
@@ -258,6 +270,7 @@ func (a Add) isExpression() {}
 func (a Add) String() string {
 	return fmt.Sprintf("(%v + %v)", a.left.String(), a.right.String())
 }
+func (a Add) getT() token { return a.t } // a for mass copy and paste
 
 /**********/
 type Subtract struct {
@@ -270,6 +283,7 @@ func (s Subtract) isExpression() {}
 func (s Subtract) String() string {
 	return fmt.Sprintf("(%v - %v)", s.left.String(), s.right.String())
 }
+func (a Subtract) getT() token { return a.t } // a for mass copy and paste
 
 /**********/
 type Divide struct {
@@ -282,6 +296,7 @@ func (d Divide) isExpression() {}
 func (d Divide) String() string {
 	return fmt.Sprintf("(%v / %v)", d.left.String(), d.right.String())
 }
+func (a Divide) getT() token { return a.t } // a for mass copy and paste
 
 /**********/
 type Modulo struct {
@@ -294,6 +309,7 @@ func (m Modulo) isExpression() {}
 func (m Modulo) String() string {
 	return fmt.Sprintf("(%v %% %v)", m.left.String(), m.right.String())
 }
+func (a Modulo) getT() token { return a.t } // a for mass copy and paste
 
 /**********/
 type EqualEqual struct {
@@ -306,6 +322,7 @@ func (ee EqualEqual) isExpression() {}
 func (ee EqualEqual) String() string {
 	return fmt.Sprintf("(%v == %v)", ee.left.String(), ee.right.String())
 }
+func (a EqualEqual) getT() token { return a.t } // a for mass copy and paste
 
 /**********/
 type NotEqual struct {
@@ -318,6 +335,7 @@ func (ne NotEqual) isExpression() {}
 func (ne NotEqual) String() string {
 	return fmt.Sprintf("(%v != %v)", ne.left.String(), ne.right.String())
 }
+func (a NotEqual) getT() token { return a.t } // a for mass copy and paste
 
 /**********/
 type Less struct {
@@ -330,6 +348,7 @@ func (l Less) isExpression() {}
 func (l Less) String() string {
 	return fmt.Sprintf("(%v < %v)", l.left.String(), l.right.String())
 }
+func (a Less) getT() token { return a.t } // a for mass copy and paste
 
 /**********/
 type Greater struct {
@@ -342,6 +361,7 @@ func (g Greater) isExpression() {}
 func (g Greater) String() string {
 	return fmt.Sprintf("(%v > %v)", g.left.String(), g.right.String())
 }
+func (a Greater) getT() token { return a.t } // a for mass copy and paste
 
 /**********/
 type LessEq struct {
@@ -354,6 +374,7 @@ func (le LessEq) isExpression() {}
 func (le LessEq) String() string {
 	return fmt.Sprintf("(%v <= %v)", le.left.String(), le.right.String())
 }
+func (a LessEq) getT() token { return a.t } // a for mass copy and paste
 
 /**********/
 type GreaterEq struct {
@@ -366,6 +387,7 @@ func (ge GreaterEq) isExpression() {}
 func (ge GreaterEq) String() string {
 	return fmt.Sprintf("(%v >= %v)", ge.left.String(), ge.right.String())
 }
+func (a GreaterEq) getT() token { return a.t } // a for mass copy and paste
 
 /*********/
 type Power struct {
@@ -378,3 +400,31 @@ func (p Power) isExpression() {}
 func (p Power) String() string {
 	return fmt.Sprintf("(%v ^ %v)", p.base.String(), p.exponent.String())
 }
+func (a Power) getT() token { return a.t } // a for mass copy and paste
+
+/**********/
+type And struct {
+	t     token
+	left  Expression
+	right Expression
+}
+
+func (a And) isExpression() {}
+func (a And) String() string {
+	return fmt.Sprintf("(%v >= %v)", a.left.String(), a.right.String())
+}
+func (a And) getT() token { return a.t } // a for mass copy and paste
+
+/**********/
+type Or struct {
+	t     token
+	left  Expression
+	right Expression
+}
+
+func (o Or) isExpression() {}
+func (o Or) String() string {
+	return fmt.Sprintf("(%v >= %v)", o.left.String(), o.right.String())
+}
+func (a Or) getT() token { return a.t } // a for mass copy and paste
+

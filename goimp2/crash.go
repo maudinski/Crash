@@ -29,6 +29,7 @@ func main() {
 	ast := parser.parse()
 	analyzer := newSemAn(ast)
 	analyzer.analyze()
+	fmt.Println(ast)
 }
 
 
