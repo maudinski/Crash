@@ -1,7 +1,10 @@
 package main
 
+// the nodes for the ast are in nodes.go. nodes.go only contains the node definitions
+// and some helper/dummy methods. SemanticAnalyzer.go has the analyze methods (that do
+// semantic analysis) and code generator and optimizer probably will be something similar
 import ()
- 
+
 // something like that
 type Ast struct {
 	structs   []string // as in fuck this for now

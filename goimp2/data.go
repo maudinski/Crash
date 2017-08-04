@@ -8,7 +8,7 @@ type Data struct {
 	length   int
 	fileName string
 }
- 
+
 func newData(fileData []byte, fileName string) *Data {
 	d := new(Data)
 	d.data = fileData

@@ -38,7 +38,7 @@ func (q *Queue) push(t token) {
 func (q *Queue) pull() token {
 	t := q.tokens[0]
 	if q.amt == 1 {
-		q.tokens = make([]token, 0) // idk about this, might be allocating mem
+		q.tokens = make([]token, 0) // idk about this, might be allocating memory
 	} else {
 		q.tokens = q.tokens[1:]
 	}

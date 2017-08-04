@@ -1,5 +1,6 @@
 // this is hacked get it working then redo
 package main
+
 // TODO error message to format line12: errMsg
 // TODO got and comment what token each function is taking as a parameter and some
 // example of what they are parsing, I'll thank myself later I'm sure
@@ -17,13 +18,13 @@ type Parser struct {
 	// to". Refers to single expressions (like literals and ID's, function calls, etc)
 	// and also infix operators (like ! and negative sign). Those are the keys
 	//  set with p.setPrattMaps(), in expressionParser.go
-	nudFunctions map[string]func(*Parser, token)Expression
+	nudFunctions map[string]func(*Parser, token) Expression
 	// led stands for left denotion, whcih i guess means that "these are the functions
 	// im looking for when i have some left expression that is unclaimed". These usually
 	// refer to operators. Those are the key
 	// https://people.csail.mit.edu/jaffer/slib/Nud-and-Led-Definition.html
 	// link to some article. set with p.setPrattMaps()
-	ledFunctions map[string]func(*Parser, token, Expression)Expression
+	ledFunctions map[string]func(*Parser, token, Expression) Expression
 	// stands for binding power, which is literally just presedence power, but pratt
 	// describes it as the power an operator has of binding an expression to it. ie:
 	// 2 + 3 * 5, the 3 gets bound to the *, not the +, cause of presedence. Turns to
@@ -65,7 +66,7 @@ func (p *Parser) parse() *Ast {
 		case "\\n":
 			continue
 		default:
-			p.errorTrashLine(t, "Token/statment outside function. '%v'...", t.value )
+			p.errorTrashLine(t, "Token/statment outside function. '%v'...", t.value)
 		}
 	}
 	if len(p.errors) != 0 {
@@ -308,7 +309,7 @@ func (p *Parser) parseReturn(t token) Return {
 
 // dirty-ish but oh well
 func (p *Parser) errorTrashLine(t token, format string, args ...interface{}) {
-	fullMsg := "Line " +toString(t.line)+": " + format
+	fullMsg := "Line " + toString(t.line) + ": " + format
 	leftBrace := false
 	for t.ttype != "NEWLINE" && t.ttype != "EOF" {
 		if t.ttype == "{" {
@@ -316,10 +317,10 @@ func (p *Parser) errorTrashLine(t token, format string, args ...interface{}) {
 		}
 		t = p.lx.next()
 	}
-	if leftBrace && t.ttype != "EOF"{
+	if leftBrace && t.ttype != "EOF" {
 		p.lx.putBack(token{"{", "{", t.line})
 	}
-	fmt.Printf(fullMsg + "\n", args...) // added this is cause queueing up  relvant errors
-	os.Exit(0) // sucks
+	fmt.Printf(fullMsg+"\n", args...) // added this is cause queueing up  relvant errors
+	os.Exit(0)                        // sucks
 	p.errors = append(p.errors, fmt.Sprintf(fullMsg, args...))
 }

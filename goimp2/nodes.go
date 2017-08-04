@@ -1,5 +1,9 @@
 package main
 
+// NOTE these are just intial defining of the nodes and their helper methods (like
+// String, getToken, etc). They have more methods each. Semantic analyzer is just
+// a few SemAn methods and the rest are someNode.analyze methods. code generator
+// will probably be the same
 import (
 	"fmt"
 	"strconv"
@@ -13,8 +17,8 @@ type Node interface {
 type Expression interface {
 	Node
 	analyzeE(*SemAn) string // used and defined in semanticAnalyzer.go
-	isExpression() // dummy functions to force compiler to differentiate between E and S
-	getT() token // is expression kinda pointless now but ohwell. Nice and readable
+	isExpression()          // dummy functions to force compiler to differentiate between E and S
+	getT() token            // is expression kinda pointless now but ohwell. Nice and readable
 }
 
 type Statement interface {
@@ -157,7 +161,7 @@ func (c Call) isExpression() {} // Semantic analyzer will have to check if a fun
 func (c Call) String() string {
 	str := "Function call, name " + c.id.String() + ", params:"
 	for i, e := range c.params {
-		str += " |"+toString(i+1)+":"+e.String()
+		str += " |" + toString(i+1) + ":" + e.String()
 	}
 	return str
 }
@@ -215,6 +219,7 @@ type Bool struct {
 	t     token
 	value bool
 }
+
 func (b Bool) isExpression() {}
 func (b Bool) String() string {
 	return strconv.FormatBool(b.value)
@@ -223,9 +228,10 @@ func (a Bool) getT() token { return a.t } // a for mass copy and paste
 
 /*******/
 type Not struct {
-	t token
+	t   token
 	exp Expression
 }
+
 func (n Not) isExpression() {}
 func (n Not) String() string {
 	return fmt.Sprintf("!(%v)", n.exp.String())
@@ -234,9 +240,10 @@ func (a Not) getT() token { return a.t } // a for mass copy and paste
 
 /*******/
 type Negative struct {
-	t token
+	t   token
 	exp Expression
 }
+
 func (n Negative) isExpression() {}
 func (n Negative) String() string {
 	return fmt.Sprintf("-(%v)", n.exp.String())
@@ -427,4 +434,3 @@ func (o Or) String() string {
 	return fmt.Sprintf("(%v >= %v)", o.left.String(), o.right.String())
 }
 func (a Or) getT() token { return a.t } // a for mass copy and paste
-

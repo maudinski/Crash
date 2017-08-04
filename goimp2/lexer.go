@@ -1,5 +1,6 @@
 // if lexer uses it, but it doesn't have lexer as a reciever, it's in lexerSecondaries.go
 package main
+
 // TODO redo error management to a seperate error method, and format: line 12: errmsg
 import (
 	"fmt"
@@ -121,9 +122,9 @@ func (lx *Lexer) getOpToken(op string) token {
 	} else if isAndOr(op) {
 		if c == op {
 			lx.data.next()
-			return token{"OPERATOR", op+op, lx.lineNum}
-		} else  {
-			lx.addErrors("Needs to be "+op+op)
+			return token{"OPERATOR", op + op, lx.lineNum}
+		} else {
+			lx.addErrors("Needs to be " + op + op)
 		}
 	}
 	return token{"OPERATOR", op, lx.lineNum}
@@ -205,4 +206,3 @@ func (lx *Lexer) isKeyword(s string) bool {
 func (lx *Lexer) addErrors(msg string, args ...interface{}) {
 	lx.errors = append(lx.errors, fmt.Sprintf("Line "+toString(lx.lineNum)+": "+msg, args...))
 }
-
