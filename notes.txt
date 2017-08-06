@@ -1,17 +1,11 @@
-just build it with everything in mind, fuck this "add features as you go" shit, it
-just leads to massive spaghetti code
-still ended up being that way. Whole things machete'ed
+have to add:
+arrays (non appendable, immutable in size)
+print
+scan
+structs
+imports
 
 also, haven't tested the lexer with tossing bugs in it
-
-kind of want to have some sort of universal type at the top of all types called VOID or NULL
-or something, where you can set any type equal to VOID or NULL or NIL (prolly nil)
-might not be a universal type, but a universal value that all types can be set to, not just
-pointers. Only problem is that would lead to some weird errors for user. Prolly not
-doable, it has to be representable in binary. NULL only works for pointers because a
-pointer with all bits in it's value (or something like that) set to 0 is not a valid
-memory address so they use that as an advantage, but all bits 0 is valid for chars,
-ints, floats, etc
 
 i don't need to be using make, i cant just be saying somestruct.somelice = []sometype
 
@@ -25,13 +19,6 @@ on their own. Prefer not to though
 
 a lot of this hasnt been error tested
 
-For structs, lex, parse and semantic analyze them first (maybe force them to be in a
-seperate file, thought that's really dirty). Then add those to the lexer as types, that
-way it will be sort of automatic. Also, a struct initialzer will be
-StructName s = StructNameInit(5, "hello", 4) (fields in order). That is actually a
-function that the compiler will automatically generate depending on the struct that returns
-said type. Not sure how to do the parsing on that though, will figure it out
-
 some builtins needed:
 print(4, x + 9)
 string s = scan("Enter something"), basically a call to print then scans and returns
@@ -39,19 +26,22 @@ alloc(int) takes a type, and only maybe
 free(x) takes the allocated variable, and only maybe
 type casters: int() float() string(), string to int might only be possible with multiple
             return types
-append()
+someArray.append(somevalue)
+    probably won't actually be a method or anything, maybe just a special case in the
+    compiler. Will trasnfer everything over to a new memmory location that's one slot
+    longer, then reset the variable to that location in memory
 // this is some later shit, no joke this will be pretty fucking hard
 remove(file)
 file = open("filename")
 string text = read(file)
 write(file, text + "\n")
-writeLine(file, text)
+exit()
+continue
 
 the fact that function return types are after the id and paramters is tied into the lexer
 and used for it to work. don't fuck with it
 
-
-
+fuck it, parser won't queue up errors
 
 
 

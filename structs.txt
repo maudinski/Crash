@@ -1,0 +1,8 @@
+For structs, lex, parse and semantic analyze them first (maybe force them to be in a
+seperate file, thought that's really dirty). Then add those to the lexer as types, that
+way it will be sort of automatic. Also, a struct initialzer will be
+StructName s = StructNameInit(5, "hello", 4) (fields in order). That is actually a
+function that the compiler will automatically generate depending on the struct that returns
+said type. Not sure how to do the parsing on that though, will figure it out
+
+will prolly just be a block in memory of relevant size (slack bytes and shit)

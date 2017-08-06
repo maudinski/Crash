@@ -33,7 +33,7 @@ type Parser struct {
 	// pretty nasty work around, but this is set and unset in call() nud function for
 	// pratt parser. It's used in errorTrashExpression() to put back a ) if the error
 	// ocurred in an expression in a function call, so that parseFunctionCall() can give
-	// accurate errors
+	// accurate errors. Kinda pointless since the parser exits after any errors though
 	parsingFuncCallExpression int
 }
 
