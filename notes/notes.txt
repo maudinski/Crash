@@ -4,6 +4,7 @@ print
 scan
 structs
 imports
+cmon man variadic functions are needed
 
 also, haven't tested the lexer with tossing bugs in it
 
@@ -43,5 +44,5 @@ and used for it to work. don't fuck with it
 
 fuck it, parser won't queue up errors
 
-
+i guess three returns max ? have three dedicated registers for returns
 

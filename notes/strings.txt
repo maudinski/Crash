@@ -1,0 +1,11 @@
+might just make strings immutable for the bootstrap then once the ball is rolling work
+on the heap, cause it's looking like strings are going to be allocated memory
+
+ar's will have to hold the address of all the local strings in the heap, then the return
+procedure will have to free them all (just move the heap top pointer to it's position
+before that activation record). Picture around the yugioh card
+
+probably have to be allocated on the heap
+will be some type of structe with current size, then the value
+
+

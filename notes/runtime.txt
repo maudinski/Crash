@@ -1,0 +1,81 @@
+apparently the c compiler uses the heap for global and static variables, but i like
+that stanford guys way of having a static section right before the stack frames
+
+Activation record shit -
+
+local data: lay out the local data section of the activation record as the declaration
+is being generated, at compile time. [deleted some shit now this looks empty] Compiler
+decides exactly how much memory to allocate depnding on the type of that var in the input
+code. Doesn't apply to strings, since they are of variable length. Probably allocate for
+parameters here too.
+The address of each var will be an offset from the starting point of the activation record
+for that procedure
+^^
+Might inlcude variables used in pseudo environements too (if, while). Just still make sure
+they arent used underneath that environement in semantic analysis
+in regards the addresses of these variables, they will be based of the starting address
+of the activation record. So the first variable will be at AR_ADDRESS + (size of every
+thing stored before). Say that first variable is an int, then the next variable will be
+stored at AR_ADDRESS + (size of everything stored before vars) + 8, since integers are 8
+bytes long. All this will be statically generated an managed at compile time, prolly stored
+in some symbol map
+              [templates]
+activation records | are entirely set at compile time for a lot of languages. Hence why go
+and c only allow for constants and literals as array index lengths, so that the activation
+record can be set at compile time. self laugh - that time i asked on stack overflow if
+constants could be set at runtime, so that I could make an array of some variable constant
+lmaoooo.
+Why go has slices, so arrays can be more dynamic. Slices are probably heap shit
+
+imagining you just push the activation record onto the stack as the functions are called
+also, remember, functions/procedures as i know them are a property of these higher level
+languages. That functionality (no relation to word "functions" ("principle vagina, no
+relation")) is what i'm trying to emulate in assembly.
+
+RETURNING from procedure: Have some return procedure that restores all the regisiters and
+stack depending on the shit stored in the about-to-be-popped AR. Maybe return values get
+put in rbx and this return procedure knows that, idk.
+Probably set registers for set things, like rbx is always for return values, rax is always
+for calculations, idk. Reminder that i WILL do multiple return values
+may or may not need to be custom for each function call
+
+CALLING a procedure: have some calling procedure that pushes the ar on the stack, saves
+the previous machine state and values, sets stack pointers, all kinds of shit
+may or may not need to be custom for each function call
+
+ar's will have to hold the address of all the local strings in the heap, then the return
+procedure will have to free them all (just move the heap top pointer to it's position
+before that activation record). Picture around the yugioh card
+
+static data (constants and globals): laid out at compile time, probably in the
+"section .data" field
+
+Thinking all addresses must be divisible by 8. To keep calculations universal.
+Aligned
+
+most compilers use registers for return types and parameter passing cause it's more efficient
+
+FOR PRINT - maybe define some set of instruction for different data types, and when print
+      is called, it will do those instructions for that data type? ie, strings would have
+      nothing to be done with, but numbers would have each digit incremented by 48 (ascii
+      shit). and when print is called, you lay out some type of print record that keeps
+      going until the pointer reaches the top of that, idk
+
+i guess three returns max ? have three dedicated registers for returns
+
+not sure what to do about arrays. Dragon book says that the AR can hold a pointer to the
+array and the actual array stored right after the AR. Not sure what to do about resizing
+though
+
+
+
+
+
+
+
+
+
+
+
+
+

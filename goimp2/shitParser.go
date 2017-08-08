@@ -304,7 +304,10 @@ func (p *Parser) parseWhile(t token) While {
 
 //will only work for single return types
 func (p *Parser) parseReturn(t token) Return {
-	return Return{t, p.parseExpression(0)}
+	return Return{t, p.parseExpression(0) //TODO
+	// took of curly brace as reminder
+	// need to make sure that the next character in all these is \n
+	// (declaration, reassignment, etc)
 }
 
 // dirty-ish but oh well

@@ -1,0 +1,32 @@
+probably do this in c
+maybe cant use an registers for this. Watch that fat pink mohawk guy's video 2 on c's
+heap implementation, and 7.8 in dragon book for garbage collector/ heap management
+
+psuedo coded free() function in free.c
+
+i think the heap will always be a linked list. it'll start as a single node, and as
+shit gets allocated it gets chopped up into the list
+
+so idea:
+
+[size, inUse]
+--------------
+[100, false]
+
+w = alloc(size 10)
+[90, false] <- [10, true]
+
+x = alloc(size 20)
+[70, false] <- [20, true] <- [10, true]
+
+y = alloc(size 5)
+[65, false] <-[5, true] <- [20, true] <- [10, true]
+
+free(x)
+[65, false] <-[5, true] <- [20, false] <- [10, true]
+
+free(w)
+[65, false] <- [5, true] <- [30, false]
+
+z = alloc(size 40)
+[25, false] <- [40, true] <- [5, true] <- [30, false]

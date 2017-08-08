@@ -48,9 +48,9 @@ type If struct {
 	exp        Expression
 	trueBlock  Block
 	isElse     bool
-	falseBlock Block
-}
-
+	falseBlock Block // golangs parser has blocks as statements, so that this falseBlock
+}	// (namely, 'else' block) just takes a statement, which means this else block can
+	// be another if statement, allowing if else chains
 func (i If) isStatement() {}
 func (i If) String() string {
 	return fmt.Sprintf("\n\tIf:Expr: %v \n\tTrue block: %v \n\tFalse block: %v\n",
@@ -112,18 +112,7 @@ func (r Reassignment) String() string { // not sure if this will work since expr
 	return fmt.Sprintf("Reassignment: Id %v, value %v", r.id, r.value) // is interface
 }
 
-/********************
-type FakeExpression struct {
-	t     token
-	value string
-}
-
-func (fe FakeExpression) isExpression() {}
-func (fe FakeExpression) String() string {
-	return fe.value
-}
-
-/************/
+/********************/
 type While struct {
 	t         token
 	condition Expression
