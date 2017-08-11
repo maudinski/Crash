@@ -1,1 +1,3 @@
-go build goimp2/crash.go goimp2/lexer.go goimp2/lexerSecondaries.go goimp2/data.go goimp2/shitParser.go goimp2/nodes.go goimp2/ast.go goimp2/semanticAnalyzer.go goimp2/environmentStack.go goimp2/shitExpressionParser.go
+python3 buildScript.py
+# ran like this cause atom won't recognize this as a bash script without a file extension
+# and i don't want the file extension in gobuild, but I want syntax highlighting 

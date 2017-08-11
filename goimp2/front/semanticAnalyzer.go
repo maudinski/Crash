@@ -1,5 +1,7 @@
+// TODO need to create a symbol table that stores the symbols and types (types or size of
+// memory needed) and also has a spot for the relative address it will be at. Not sure
+// about relative address being in there. 9.3 in dragonbook for address shit
 package main
-
 // point of this is to check if variables exist in the scope, functions called where
 // already defined/built in, expressions are valid, and type checking for expression
 // and variable assignments/reassignments. Final string of error checking
@@ -44,6 +46,8 @@ func (sa *SemAn) analyze() {
 	sa.checkErrors() // will only be global variable expression errors
 	sa.phase2()
 	sa.checkErrors()
+	sa.phase3() // does it's own exiting
+	sa.checkErrors()
 }
 
 // pre shit
@@ -80,6 +84,16 @@ func (sa *SemAn) phase2() {
 	}
 }
 
+// for now just checks that a main function exists. Can be for any more small checks that
+// are needed
+func (sa *Seman) phase3() {
+	_, ok := sa.declaredFuncs["main"]
+	if !ok {
+		fmt.Println("No main function, compilation failed")
+		os.Exit(0)
+	}
+}
+
 /******this switches control over to the statement********/
 func (sa *SemAn) analyzeBlock(block Block) {
 	for _, s := range block {
@@ -113,6 +127,8 @@ func (i If) analyze(sa *SemAn) {
 	sa.es.pushNewEnv()
 	sa.analyzeBlock(i.trueBlock)
 	sa.es.popEnv()
+	// i might be stupid but I can't understand or remember why this is !i.isElse, since
+	// the oposite would make more sense. But it works, so fuck it who cares
 	if !i.isElse {
 		sa.es.pushNewEnv()
 		sa.analyzeBlock(i.falseBlock)

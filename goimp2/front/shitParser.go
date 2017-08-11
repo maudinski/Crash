@@ -287,6 +287,8 @@ func (p *Parser) parseKeyword(t token) Statement {
 	} // parser will exit if any errors exist
 }
 
+// how to make if else chains: make block a statement. Check go's source code for their
+// nodes to see how they did it
 func (p *Parser) parseIf(t token) If {
 	i := If{t: t, exp: p.parseExpression(0), trueBlock: p.parseBlock()}
 	if t = p.lx.next(); t.value == "else" {

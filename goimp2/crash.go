@@ -6,17 +6,27 @@ import (
 	"os"
 )
 
+var outputAssembly = false
+
 func main() {
-	if len(os.Args) != 2 {
-		fmt.Println("Enter one file")
-		os.Exit(1)
+	var fileName string
+	if len(os.Args) == 1 {
+		fmt.Println("No file specified")
+		os.Exit(0)
 	}
-	fileData, err := ioutil.ReadFile(os.Args[1])
+	if os.Args[1] == "-ass" {
+		outputAssembly = true
+		fileName = os.Args[2]
+	} else {
+		fileName := os.Args[1]
+	}
+	fileName = checkFileName(fileName)
+	fileData, err := ioutil.ReadFile(fileName)
 	if err != nil {
-		fmt.Println("File not read: ", os.Args[1])
+		fmt.Printf("File not read: '%v'\n", fileName)
 		os.Exit(1)
 	}
-	data := newData(fileData, os.Args[1])
+	data := newData(fileData, fileName)
 	lexer := newLexer(data)
 	lexer.setKeywords("if", "func", "while" /*"for",*/, "return",
 		"struct", "global")
@@ -27,7 +37,38 @@ func main() {
 	parser := newParser(lexer)
 	parser.setPrattMaps() // hard coded in shitExpressionParser.go
 	ast := parser.parse()
+	// fmt.Println(ast)
 	analyzer := newSemAn(ast)
-	analyzer.analyze()
-	fmt.Println(ast)
+	symtbl := analyzer.analyze()
+	// fmt.Println(ast)
+	generator := newCodeGenerator(ast, symtbl, fileName)
+	// outputs the generated code to a file with fileName.asm
+	generator.generate()
+	processAss(fileName)
 }
+
+func processAss(fileName string) {
+	if outputAssembly {
+		os.Exit(1)
+	}
+	// run assembler on fileName.asm
+	// run the linker
+	// delete the assembly file and .o file
+}
+
+// checks the file extension and truncates it
+func checkFileName(fn string) string {
+
+}
+
+
+
+
+
+
+
+
+
+
+
+

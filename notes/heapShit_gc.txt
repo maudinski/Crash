@@ -30,3 +30,7 @@ free(w)
 
 z = alloc(size 40)
 [25, false] <- [40, true] <- [5, true] <- [30, false]
+
+better representation around the yugioh card in black spiral
+
+arrays will be on the heap, and the array value will be a pointer to that block of memory

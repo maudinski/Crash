@@ -67,9 +67,11 @@ not sure what to do about arrays. Dragon book says that the AR can hold a pointe
 array and the actual array stored right after the AR. Not sure what to do about resizing
 though
 
+loop on page 518 for optimal ideas for expressions
 
-
-
+keep code to a minimum. Less intructions = faster code in gnereal. like: since multiply
+and divide always have to end up in rax, use rax for expression handling so there is less
+shifting around of values
 
 
 

@@ -1,0 +1,12 @@
+need to create a symbol table in the semanticAnalyzer that stores the symbols and types
+(types or size of memory needed) and also has a spot for the relative address it will be
+at
+
+keep code to a minimum. Less intructions = faster code in gnereal. like: since multiply
+and divide always have to end up in rax, use rax for expression handling so there is less
+shifting around of values
+
+in general, the gen function of declarations and assignment will only fuck with the AR
+and heap. Expressions and function calls will fuck with the stack
+
+dragon book has some general code gen algorithm in 9.6

@@ -1,3 +1,8 @@
 if a function has 2 seperate for loops, and both are declaring the same type for the
 for counter (for int i = 9, for int j = 7), you can use the same memory address in the
 AR for both of them (as long as the loops aren't nested, goes without saying)
+^^ may not be the point. Quote from dragon book - "tries to transform the intermediate
+code (ast) into a form from which more efficient target code can be produced". Prolly
+just stretch out for loops, idk. ch 10 in db
+
+9.9 for peephole optimizations in dragon book

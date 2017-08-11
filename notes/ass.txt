@@ -40,3 +40,32 @@ is from this
     , then hits the the jump to .L3 also
 
 seems cool and elegant
+
+SOME OPERATIONS like mul will modify other registers to use them for their calculations.
+heads up
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
