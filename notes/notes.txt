@@ -31,7 +31,7 @@ someArray.append(somevalue)
     probably won't actually be a method or anything, maybe just a special case in the
     compiler. Will trasnfer everything over to a new memmory location that's one slot
     longer, then reset the variable to that location in memory
-// this is some later shit, no joke this will be pretty fucking hard
+// this is some later ___, no joke this will be pretty ___ing hard
 remove(file)
 file = open("filename")
 string text = read(file)
@@ -40,9 +40,9 @@ exit()
 continue
 
 the fact that function return types are after the id and paramters is tied into the lexer
-and used for it to work. don't fuck with it
+and used for it to work. don't ___ with it
 
-fuck it, parser won't queue up errors
+___ it, parser won't queue up errors
 
 i guess three returns max ? have three dedicated registers for returns
 

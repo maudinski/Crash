@@ -1,10 +1,10 @@
 // TODO need to create a symbol table that stores the symbols and types (types or size of
 // memory needed) and also has a spot for the relative address it will be at. Not sure
-// about relative address being in there. 9.3 in dragonbook for address shit
+// about relative address being in there. 9.3 in dragonbook for address ___
 package main
 // point of this is to check if variables exist in the scope, functions called where
 // already defined/built in, expressions are valid, and type checking for expression
-// and variable assignments/reassignments. Final string of error checking
+// and variable ___ignments/re___ignments. Final string of error checking
 // NOTE expression functions are excessively redundant but it's easier/faster in the end
 // that way. Bth for semantic analysis and parsing is true
 import (
@@ -50,7 +50,7 @@ func (sa *SemAn) analyze() {
 	sa.checkErrors()
 }
 
-// pre shit
+// pre ___
 // 1) pulls globals from sa.ast.globals
 // 2) pulls defined functions from ast.functions, they're parameter types in order,
 //    and the return type(s) in more accessible manner
@@ -116,8 +116,8 @@ func (d Declaration) analyze(sa *SemAn) {
 }
 
 // analyzeExpression verifies the expression and makes sure the resulting type
-// is of passed in type
-// so pass it the expression and pass it the return type it's supposed to be
+// is of p___ed in type
+// so p___ it the expression and p___ it the return type it's supposed to be
 func (r Return) analyze(sa *SemAn) {
 	sa.analyzeExpression(sa.declaredFuncs[sa.currentFunc].returnType, r.value)
 }
@@ -128,7 +128,7 @@ func (i If) analyze(sa *SemAn) {
 	sa.analyzeBlock(i.trueBlock)
 	sa.es.popEnv()
 	// i might be stupid but I can't understand or remember why this is !i.isElse, since
-	// the oposite would make more sense. But it works, so fuck it who cares
+	// the oposite would make more sense. But it works, so ___ it who cares
 	if !i.isElse {
 		sa.es.pushNewEnv()
 		sa.analyzeBlock(i.falseBlock)
@@ -173,7 +173,7 @@ func (c Call) analyze(sa *SemAn) {
 }
 
 /*********this goes back to sa reciever but switches it over to expression*********/
-// should validate the expression and make sure it is of the same type passed
+// should validate the expression and make sure it is of the same type p___ed
 // something like that
 // ... should be good
 func (sa *SemAn) analyzeExpression(supposedType string, e Expression) {

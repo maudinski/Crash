@@ -1,14 +1,15 @@
 func main() {
-    # this is fucking juvenile
+    # this is ___ing juvenile
     int x = 0
-	if x > 9 {
+    if x > 9 {
         print(x)
     } else {
 		int c = 9
-		print(c)	
+		print(c)
 	}
-	int someothershit = 0
+	int someother___ = 0
 }
+
 func print(int i) int {
     return i
 }

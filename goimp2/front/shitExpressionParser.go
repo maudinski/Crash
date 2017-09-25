@@ -1,6 +1,6 @@
 package main
 
-// TODO trashExpression really fucks up the rest of the errors
+// TODO trashExpression really ___s up the rest of the errors
 import (
 	"fmt"
 	"os"
@@ -9,14 +9,14 @@ import (
 
 // http://eli.thegreenplace.net/2010/01/02/top-down-operator-precedence-parsing
 // an article on pratt parsing, in case you forget what's going on
-// passed 0 initially
+// p___ed 0 initially
 func (p *Parser) parseExpression(rbp int) Expression {
 	t := p.lx.next()
 	f := p.nudFunctions[t.ttype]
 	if f == nil {
 		p.errorTrashExpression(t, "Invalid expression")
 		return Id{}
-	} // somehow need to account for EOF's and shit, logic through where to error check
+	} // somehow need to account for EOF's and ___, logic through where to error check
 	exp := f(p, t)
 	for rbp < p.getBp(p.lx.peek().value) {
 		t = p.lx.next()
@@ -25,7 +25,7 @@ func (p *Parser) parseExpression(rbp int) Expression {
 			p.errorTrashExpression(t, "Invalid 2Expression")
 			return Id{}
 		}
-		exp = f2(p, t, exp) // t being passed solely for line numbers in lexical analysis
+		exp = f2(p, t, exp) // t being p___ed solely for line numbers in lexical analysis
 	}
 	return exp
 }
@@ -38,7 +38,7 @@ func (p *Parser) setPrattMaps() {
 		"*": multiply, "/": divide, "-": subtract, "^": power, "==": equalequal,
 		">": greater, "<": less, ">=": greaterEqual, "<=": lessEqual, "!=": notEqual,
 		"%": modulo}
-	// changing these could fuck ip infixOp function, check
+	// changing these could ___ ip infixOp function, check
 	p.bp = map[string]int{")": 0, "==": 10, ">": 10, "<": 10, ">=": 10, "<=": 10,
 		"+": 20, "-": 20, "*": 30, "/": 30, "%": 30, "^": 40, "!=": 10, "&&": 5, "||": 5}
 }
@@ -84,7 +84,7 @@ func leftParen(p *Parser, t token) Expression {
 	if p.lx.peek().value != ")" {
 		// there is mismatched parens
 	} else {
-		p.lx.next() // get rid of the right paren so it doesn't fuck shit up
+		p.lx.next() // get rid of the right paren so it doesn't ___ ___ up
 	}
 	return exp
 }
@@ -172,17 +172,17 @@ func (p *Parser) getBp(op string) int {
 	return bp
 }
 
-// somethings fucked up with the way this works, so just gonna exit
-// at the end of this and print the error. Bad but will atleast not give walk ass errors
+// somethings ___ed up with the way this works, so just gonna exit
+// at the end of this and print the error. Bad but will atleast not give walk ___ errors
 // afterwords
-// I think the fuck up has to do with the putBacks() and maybe with the way the lexers
+// I think the ___ up has to do with the putBacks() and maybe with the way the lexers
 // queue works, not sure though
 func (p *Parser) errorTrashExpression(t token, msg string, args ...interface{}) {
 	fullMsg := "Line " + toString(t.line) + ": " + msg
 	for ; isExpressionPart(t); t = p.lx.next() {
 	}
 	if t.value != "," && p.parsingFuncCallExpression != 0 { // so parseFunctionCall doesnt
-		p.lx.putBack(token{")", ")", t.line}) // fuck up
+		p.lx.putBack(token{")", ")", t.line}) // ___ up
 		fullMsg += " in function call"
 	}
 	p.lx.putBack(t)

@@ -1,8 +1,8 @@
-from my understanding is shit is way less dynamic in assembly. Shit is very much hardcoded
+from my understanding is ___ is way less dynamic in ___embly. Shit is very much hardcoded
 to appear dynamic. It's a different style of thinking
 
 remember, functions/procedures as i know them are a property of these higher level
-languages. That functionality is what i'm trying to emulate in assembly
+languages. That functionality is what i'm trying to emulate in ___embly
 
 how to do conditionals:
 random():
@@ -34,7 +34,7 @@ is from this
 
 0) sets flags for conditional
 4) conditionalls jumps to .L2, which is the true part of the statement. If it gets there,
-    after it executes, it will then go to .L3 (since assembly be default executes down the
+    after it executes, it will then go to .L3 (since ___embly be default executes down the
     line and there is no ret in .L@), which is the return statement in the c code.
 1) if the conditional jump at 4) isn't executed, then it hits this, which is the else block
     , then hits the the jump to .L3 also

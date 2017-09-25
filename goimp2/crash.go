@@ -35,25 +35,25 @@ func main() {
 		fmt.Println(t)
 	}*/
 	parser := newParser(lexer)
-	parser.setPrattMaps() // hard coded in shitExpressionParser.go
+	parser.setPrattMaps() // hard coded in ___ExpressionParser.go
 	ast := parser.parse()
 	// fmt.Println(ast)
 	analyzer := newSemAn(ast)
-	symtbl := analyzer.analyze()
-	// fmt.Println(ast)
-	generator := newCodeGenerator(ast, symtbl, fileName)
+	analyzer.analyze()
+	fmt.Println(ast)
+	//generator := newCodeGenerator(ast, symtbl, fileName)
 	// outputs the generated code to a file with fileName.asm
-	generator.generate()
-	processAss(fileName)
+	//generator.generate()
+	//processAss(fileName)
 }
 
 func processAss(fileName string) {
 	if outputAssembly {
 		os.Exit(1)
 	}
-	// run assembler on fileName.asm
+	// run ___embler on fileName.asm
 	// run the linker
-	// delete the assembly file and .o file
+	// delete the ___embly file and .o file
 }
 
 // checks the file extension and truncates it

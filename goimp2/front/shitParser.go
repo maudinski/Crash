@@ -111,10 +111,10 @@ func (p *Parser) parseFunction(t token) (string, *Function) {
 	//did I comment this?)
 }
 
-// couldve probably seperated this into some smaller functions but fuck it
-// this is really bad rewrite this fucker
+// couldve probably seperated this into some smaller functions but ___ it
+// this is really bad rewrite this ___er
 // christ this function is lengthy. But I think it works
-// ma fucking cheted. Works tho
+// ma ___ing cheted. Works tho
 // TODO rewrite
 func (p *Parser) parseFunctionHeader() (string, []Parameter, string) {
 	t := p.lx.next()
@@ -309,7 +309,7 @@ func (p *Parser) parseReturn(t token) Return {
 	return Return{t, p.parseExpression(0) //TODO
 	// took of curly brace as reminder
 	// need to make sure that the next character in all these is \n
-	// (declaration, reassignment, etc)
+	// (declaration, re___ignment, etc)
 }
 
 // dirty-ish but oh well

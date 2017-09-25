@@ -7,7 +7,7 @@ import ()
 
 // something like that
 type Ast struct {
-	structs   []string // as in fuck this for now
+	structs   []string // as in ___ this for now
 	globals   []Declaration
 	functions map[string]*Function
 }

@@ -5,7 +5,7 @@ heap implementation, and 7.8 in dragon book for garbage collector/ heap manageme
 psuedo coded free() function in free.c
 
 i think the heap will always be a linked list. it'll start as a single node, and as
-shit gets allocated it gets chopped up into the list
+___ gets allocated it gets chopped up into the list
 
 so idea:
 

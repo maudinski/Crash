@@ -1,4 +1,4 @@
-import someshit
+import some___
 # AND THE HARDEST PART YET
 
 struct bucket {
@@ -10,7 +10,7 @@ struct bucket {
 struct node {
 	int num
 	node next
- 
+}
 global float h = 8
 global string t = "vfd"
 global int x = 4

@@ -6,7 +6,7 @@ keep code to a minimum. Less intructions = faster code in gnereal. like: since m
 and divide always have to end up in rax, use rax for expression handling so there is less
 shifting around of values
 
-in general, the gen function of declarations and assignment will only fuck with the AR
-and heap. Expressions and function calls will fuck with the stack
+in general, the gen function of declarations and ___ignment will only ___ with the AR
+and heap. Expressions and function calls will ___ with the stack
 
 dragon book has some general code gen algorithm in 9.6

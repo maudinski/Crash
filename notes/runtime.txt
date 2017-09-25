@@ -1,10 +1,10 @@
 apparently the c compiler uses the heap for global and static variables, but i like
 that stanford guys way of having a static section right before the stack frames
 
-Activation record shit -
+Activation record ___ -
 
 local data: lay out the local data section of the activation record as the declaration
-is being generated, at compile time. [deleted some shit now this looks empty] Compiler
+is being generated, at compile time. [deleted some ___ now this looks empty] Compiler
 decides exactly how much memory to allocate depnding on the type of that var in the input
 code. Doesn't apply to strings, since they are of variable length. Probably allocate for
 parameters here too.
@@ -25,22 +25,22 @@ and c only allow for constants and literals as array index lengths, so that the 
 record can be set at compile time. self laugh - that time i asked on stack overflow if
 constants could be set at runtime, so that I could make an array of some variable constant
 lmaoooo.
-Why go has slices, so arrays can be more dynamic. Slices are probably heap shit
+Why go has slices, so arrays can be more dynamic. Slices are probably heap ___
 
 imagining you just push the activation record onto the stack as the functions are called
 also, remember, functions/procedures as i know them are a property of these higher level
 languages. That functionality (no relation to word "functions" ("principle vagina, no
-relation")) is what i'm trying to emulate in assembly.
+relation")) is what i'm trying to emulate in ___embly.
 
 RETURNING from procedure: Have some return procedure that restores all the regisiters and
-stack depending on the shit stored in the about-to-be-popped AR. Maybe return values get
+stack depending on the ___ stored in the about-to-be-popped AR. Maybe return values get
 put in rbx and this return procedure knows that, idk.
 Probably set registers for set things, like rbx is always for return values, rax is always
 for calculations, idk. Reminder that i WILL do multiple return values
 may or may not need to be custom for each function call
 
 CALLING a procedure: have some calling procedure that pushes the ar on the stack, saves
-the previous machine state and values, sets stack pointers, all kinds of shit
+the previous machine state and values, sets stack pointers, all kinds of ___
 may or may not need to be custom for each function call
 
 ar's will have to hold the address of all the local strings in the heap, then the return
@@ -53,12 +53,12 @@ static data (constants and globals): laid out at compile time, probably in the
 Thinking all addresses must be divisible by 8. To keep calculations universal.
 Aligned
 
-most compilers use registers for return types and parameter passing cause it's more efficient
+most compilers use registers for return types and parameter p___ing cause it's more efficient
 
 FOR PRINT - maybe define some set of instruction for different data types, and when print
       is called, it will do those instructions for that data type? ie, strings would have
       nothing to be done with, but numbers would have each digit incremented by 48 (ascii
-      shit). and when print is called, you lay out some type of print record that keeps
+      ___). and when print is called, you lay out some type of print record that keeps
       going until the pointer reaches the top of that, idk
 
 i guess three returns max ? have three dedicated registers for returns

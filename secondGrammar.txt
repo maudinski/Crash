@@ -1,5 +1,6 @@
-global bool b = add(5, 8 + =) + 9 -- 
-func add( x, int y) int {
+global bool b = add(5, 8) + 9
+
+func add(int x, int y) int {
     int x = 5 / 7 - 9 + 2 - add(4, 3)
     return x + y
 }

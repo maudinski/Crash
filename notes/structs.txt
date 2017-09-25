@@ -5,4 +5,4 @@ StructName s = StructNameInit(5, "hello", 4) (fields in order). That is actually
 function that the compiler will automatically generate depending on the struct that returns
 said type. Not sure how to do the parsing on that though, will figure it out
 
-will prolly just be a block in memory of relevant size (slack bytes and shit)
+will prolly just be a block in memory of relevant size (slack bytes and ___)

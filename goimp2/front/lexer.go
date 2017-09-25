@@ -68,7 +68,7 @@ func (lx *Lexer) next() token {
 	} else if isDigit(c) { toke = lx.getNumToken(c) // ints and floats
 	} else if isOperator(c) { toke = lx.getOpToken(c) // math and bool operators
 	} else if c == "\"" { toke = lx.getStrToken() // strings
-	} else { toke = lx.getAmbiguousToken(c) } // cant classify by single byte
+	} else { toke = lx.getAmbiguousToken(c) } // cant cl___ify by single byte
 	lx.lastToken = toke // only used one so far, but ehh, could be more useful
 	return toke
 }
@@ -166,7 +166,7 @@ func (lx *Lexer) getAmbiguousToken(str string) token {
 		str += c
 	}
 	lx.data.goBack() // since one extra was read in
-	// now classify the ambiguous token
+	// now cl___ify the ambiguous token
 	if lx.isType(str) {
 		return token{"TYPE", str, lx.lineNum}
 	} else if lx.isKeyword(str) {
