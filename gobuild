@@ -1,3 +1,2 @@
 python3 buildScript.py
 # ran like this cause atom won't recognize this as a bash script without a file extension
-# and i don't want the file extension in gobuild, but I want syntax highlighting 
