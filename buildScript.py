@@ -6,7 +6,7 @@ srcDir = "goimp2"
 # ["subDirectory name(inside srcDir)", ["list", "of", "files"]]
 dirs = [
     ["", ["crash.go"]],
-    ["front", ["data.go", "environementStack.go", "lexer.go", "semanticAnalyzer.go", "shitExpressionParser.go", "shitParser.go"]],
+    ["front", ["data.go", "environementStack.go", "lexer.go", "semanticAnalyzer.go", "expressionParser.go", "parser.go"]],
     ["back", ["generator.go"]],
     ["both", ["ast.go", "nodes.go"]]
 ]
