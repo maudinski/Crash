@@ -1,2 +1,5 @@
 # Crash
-Compiler for the crash langauge. Currently just the front end
+
+In progress toy compiler for the Crash langauge
+
+Excuse any fowl language
